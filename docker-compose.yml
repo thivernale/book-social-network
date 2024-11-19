@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-bsn
+    environment:
+      POSTGRES_USER: duke
+      POSTGRES_PASSWORD: duke
+      PGDATA: /var/lib/postgres/data
+      POSTGRES_DB: book_social_network
+    volumes:
+      - postgres:/data/postgres
+    networks:
+      - bsn
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+  mail-dev:
+    image: maildev/maildev
+    container_name: mail-dev-bsn
+    ports:
+      - '1025:1025'
+      - '1080:1080'
+
+networks:
+  bsn:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local

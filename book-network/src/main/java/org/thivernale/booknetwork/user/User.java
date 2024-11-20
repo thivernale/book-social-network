@@ -90,4 +90,8 @@ public class User implements UserDetails, Principal {
     public boolean isEnabled() {
         return enabled;
     }
+
+    public String getFullName() {
+        return firstname + " " + lastname;
+    }
 }

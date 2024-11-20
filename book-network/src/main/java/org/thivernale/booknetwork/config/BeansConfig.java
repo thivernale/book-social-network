@@ -1,13 +1,18 @@
 package org.thivernale.booknetwork.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.thivernale.booknetwork.role.Role;
+import org.thivernale.booknetwork.role.RoleRepository;
 
 @Configuration
 @RequiredArgsConstructor
@@ -16,7 +21,7 @@ public class BeansConfig {
     private final UserDetailsService userDetailsService;
 
     @Bean
-    AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -24,7 +29,24 @@ public class BeansConfig {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CommandLineRunner init(final RoleRepository roleRepository) {
+        return args -> {
+            if (roleRepository.findByName("USER")
+                .isEmpty()) {
+                roleRepository.save(Role.builder()
+                    .name("USER")
+                    .build());
+            }
+        };
     }
 }

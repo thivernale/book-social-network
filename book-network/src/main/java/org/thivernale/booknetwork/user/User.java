@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.thivernale.booknetwork.book.Book;
+import org.thivernale.booknetwork.history.BookTransactionHistory;
 import org.thivernale.booknetwork.role.Role;
 
 import java.security.Principal;
@@ -41,6 +43,14 @@ public class User implements UserDetails, Principal {
     @ManyToMany(fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "owner")
+    @JsonIgnore
+    private List<Book> books;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<BookTransactionHistory> histories;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

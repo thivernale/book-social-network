@@ -8,6 +8,7 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.thivernale.booknetwork.exception.OperationNotPermittedException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -59,6 +60,16 @@ public class GlobalExceptionHandler {
             .body(
                 ExceptionResponse.builder()
                     .error(messagingException.getMessage())
+                    .build()
+            );
+    }
+
+    @ExceptionHandler(OperationNotPermittedException.class)
+    public ResponseEntity<ExceptionResponse> handleException(OperationNotPermittedException exception) {
+        return ResponseEntity.status(BAD_REQUEST)
+            .body(
+                ExceptionResponse.builder()
+                    .error(exception.getMessage())
                     .build()
             );
     }

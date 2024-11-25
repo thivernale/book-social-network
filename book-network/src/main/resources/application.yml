@@ -56,3 +56,6 @@ application:
       expiration: 86_400_000
   frontend:
     activation-url: http://localhost:4200/activate-account
+  file:
+    upload:
+      photos-output-path: ./uploads

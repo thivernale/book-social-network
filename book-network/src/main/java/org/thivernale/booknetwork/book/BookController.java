@@ -1,11 +1,14 @@
 package org.thivernale.booknetwork.book;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.thivernale.booknetwork.common.PageResponse;
 
 @RestController
@@ -99,5 +102,15 @@ public class BookController {
         Authentication authentication
     ) {
         return ResponseEntity.ok(service.approveReturnBorrowedBook(bookId, authentication));
+    }
+
+    @PostMapping(path = "cover/{book-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadBookCover(
+        @PathVariable("book-id") Long bookId,
+        @Parameter @RequestPart(name = "file") MultipartFile file,
+        Authentication authentication
+    ) {
+        service.uploadBookCover(bookId, file, authentication);
+        return ResponseEntity.accepted().build();
     }
 }

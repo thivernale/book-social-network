@@ -7,8 +7,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.thivernale.booknetwork.common.PageResponse;
 import org.thivernale.booknetwork.exception.OperationNotPermittedException;
+import org.thivernale.booknetwork.file.FileStorageService;
 import org.thivernale.booknetwork.history.BookTransactionHistory;
 import org.thivernale.booknetwork.history.BookTransactionHistoryRepository;
 import org.thivernale.booknetwork.user.User;
@@ -22,6 +24,7 @@ public class BookService {
     private final BookMapper bookMapper;
     private final BookRepository repository;
     private final BookTransactionHistoryRepository historyRepository;
+    private final FileStorageService fileStorageService;
 
     public Long save(BookRequest request, Authentication authentication) {
         Book book = bookMapper.toBook(request);
@@ -143,6 +146,14 @@ public class BookService {
         history.setReturnApproved(true);
         return historyRepository.save(history)
             .getId();
+    }
+
+    public void uploadBookCover(Long bookId, MultipartFile file, Authentication authentication) {
+        Book book = getBook(bookId);
+        User user = getCurrentUser(authentication);
+        var bookCover = fileStorageService.saveFile(file, user.getId());
+        book.setBookCover(bookCover);
+        repository.save(book);
     }
 
     private Book getBook(Long bookId) {

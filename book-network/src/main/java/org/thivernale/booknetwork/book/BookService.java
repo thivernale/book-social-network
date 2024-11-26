@@ -156,7 +156,7 @@ public class BookService {
         repository.save(book);
     }
 
-    private Book getBook(Long bookId) {
+    public Book getBook(Long bookId) {
         return repository.findById(bookId)
             .orElseThrow(() -> new EntityNotFoundException("Book not found"));
     }

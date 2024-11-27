@@ -137,7 +137,8 @@ public class BookService {
             throw new OperationNotPermittedException("Book cannot be returned since it is archived or not shareable");
         }
         User user = getCurrentUser(authentication);
-        if (!Objects.equals(user.getId(), book.getOwner().getId())) {
+        if (!Objects.equals(user.getId(), book.getOwner()
+            .getId())) {
             throw new OperationNotPermittedException("Book return can be approved only by owner");
         }
         BookTransactionHistory history =
@@ -166,7 +167,7 @@ public class BookService {
     }
 
     private PageRequest getPageable(int page, int size) {
-        return PageRequest.of(page, size, Sort.by("createdDate")
+        return PageRequest.of(page, size, Sort.by("createdAt")
             .descending());
     }
 

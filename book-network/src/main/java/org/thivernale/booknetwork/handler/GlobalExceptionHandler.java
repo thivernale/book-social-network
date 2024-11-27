@@ -7,6 +7,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.thivernale.booknetwork.exception.OperationNotPermittedException;
 
@@ -19,6 +20,7 @@ import static org.thivernale.booknetwork.handler.BusinessErrorCodes.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(LockedException.class)
+    @ResponseStatus(UNAUTHORIZED)
     public ResponseEntity<ExceptionResponse> handleException(LockedException lockedException) {
         return ResponseEntity.status(UNAUTHORIZED)
             .body(
@@ -31,6 +33,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DisabledException.class)
+    @ResponseStatus(UNAUTHORIZED)
     public ResponseEntity<ExceptionResponse> handleException(DisabledException disabledException) {
         return ResponseEntity.status(UNAUTHORIZED)
             .body(
@@ -43,6 +46,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(UNAUTHORIZED)
     public ResponseEntity<ExceptionResponse> handleException(BadCredentialsException badCredentialsException) {
         return ResponseEntity.status(UNAUTHORIZED)
             .body(
@@ -55,6 +59,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MessagingException.class)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
     public ResponseEntity<ExceptionResponse> handleException(MessagingException messagingException) {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR)
             .body(
@@ -65,6 +70,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(OperationNotPermittedException.class)
+    @ResponseStatus(BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> handleException(OperationNotPermittedException exception) {
         return ResponseEntity.status(BAD_REQUEST)
             .body(
@@ -75,6 +81,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(BAD_REQUEST)
     public ResponseEntity<ExceptionResponse> handleException(MethodArgumentNotValidException validException) {
         Set<String> validationErrors = new HashSet<>();
         validException.getBindingResult()
@@ -90,6 +97,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
     public ResponseEntity<ExceptionResponse> handleException(Exception exception) {
         // TODO log the exception
         exception.printStackTrace();

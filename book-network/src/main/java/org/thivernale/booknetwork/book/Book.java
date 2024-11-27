@@ -33,7 +33,7 @@ public class Book extends BaseEntity {
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
     private List<Feedback> feedbacks;
 
     @OneToMany(mappedBy = "book")

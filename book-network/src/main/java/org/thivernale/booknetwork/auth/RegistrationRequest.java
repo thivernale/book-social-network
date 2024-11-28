@@ -19,7 +19,7 @@ public class RegistrationRequest {
     @NotEmpty(message = "Lastname should not be empty")
     private String lastname;
     @NotBlank(message = "Email should not be empty")
-    @NotEmpty(message = "Email( should not be empty")
+    @NotEmpty(message = "Email should not be empty")
     @Email(message = "Invalid email")
     private String email;
     @NotBlank(message = "Password should not be empty")

@@ -55,7 +55,8 @@ application:
       secretKey: secret
       expiration: 86_400_000
   frontend:
-    activation-url: http://localhost:4200/activate-account
+    url: http://localhost:4200
+    activation-url: ${application.frontend.url}/activate-account
   file:
     upload:
       photos-output-path: ./uploads

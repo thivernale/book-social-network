@@ -1,0 +1,45 @@
+<h3>My Returned Books</h3>
+<hr />
+<div *ngIf="message" [class.alert-danger]="level !== 'success'"
+     [class.alert-success]="level === 'success'" class="alert"
+>
+  {{message}}
+</div>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th scope="col">#</th>
+    <th scope="col">Title</th>
+    <th scope="col">Author</th>
+    <th scope="col">ISBN</th>
+    <th scope="col">Rate</th>
+    <th scope="col"><i class="fas fa-cogs"></i></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let book of bookResponse.content; let i = index">
+    <th scope="row">{{i + 1}}</th>
+    <td>{{book.title}}</td>
+    <td>{{book.authorName}}</td>
+    <td>{{book.isbn}}</td>
+    <td><i class="fas fa-star text-warning"></i>{{book.rate}}</td>
+    <td>
+      <div class="d-flex gap-2">
+        <i [ngClass]="{ 'fa-regular text-primary': !book.returned, 'fa-solid text-success': book.returned }"
+           class="fa-regular fa-paper-plane text-primary"></i>
+        <i *ngIf="book.returnApproved || !book.returned" [class.text-success]="book.returnApproved"
+           class="fas fa-circle-check"></i>
+        <i (click)="approveBookReturn(book)" *ngIf="book.returned && !book.returnApproved"
+           class="fas fa-circle-check cursor-pointer"></i>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<app-pagination
+  (pageChange)="page = $event; findAllReturnedBooks()"
+  [bookResponse]="bookResponse"
+  [page]="bookResponse.page ?? 0"
+  [size]="size" />

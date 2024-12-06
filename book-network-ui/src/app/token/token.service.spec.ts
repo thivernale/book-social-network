@@ -31,12 +31,12 @@ describe('TokenService', () => {
     mockSetItem.and.stub();
     service.token = '123';
     expect(mockSetItem).toHaveBeenCalledTimes(1);
-    expect(mockSetItem).toHaveBeenCalledWith('token' as any, '123' as any);
+    expect(mockSetItem).toHaveBeenCalledWith('token', '123');
 
     mockGetItem.and.returnValue('123');
-    let token = service.token;
+    const token = service.token;
     expect(mockGetItem).toHaveBeenCalledTimes(1);
-    expect(mockGetItem).toHaveBeenCalledWith('token' as any);
+    expect(mockGetItem).toHaveBeenCalledWith('token');
     expect(token).toEqual('123');
   });
 });

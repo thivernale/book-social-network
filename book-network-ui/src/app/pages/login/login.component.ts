@@ -15,7 +15,7 @@ import { TokenService } from '../../token/token.service';
 })
 export class LoginComponent {
   protected authRequest: AuthenticationRequest = { email: '', password: '' };
-  protected errorMsg: Array<String> = [];
+  protected errorMsg: string[] = [];
 
   constructor(
     private router: Router,

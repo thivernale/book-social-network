@@ -1,0 +1,94 @@
+<h3>My Borrowed Books</h3>
+<hr />
+<div *ngIf="selectedBook" class="d-flex flex-column col-12 col-md-6">
+  <h3>Return and Share Feedback</h3>
+
+  <div *ngIf="errorMsg.length" class="alert alert-danger mt-2" role="alert">
+    <p *ngFor="let msg of errorMsg">{{ msg }}</p>
+  </div>
+
+  <div class="d-flex flex-column col-12">
+    <div class="d-flex">
+      <div class="col-3 col-md-2 fw-bold">Title</div>
+      <div class="col">{{selectedBook.title}}</div>
+    </div>
+    <div class="d-flex">
+      <div class="col-3 col-md-2 fw-bold">Author</div>
+      <div class="col">{{selectedBook.authorName}}</div>
+    </div>
+    <div class="d-flex">
+      <div class="col-3 col-md-2 fw-bold">ISBN</div>
+      <div class="col">{{selectedBook.isbn}}</div>
+    </div>
+    <div class="d-flex">
+      <div class="col-3 col-md-2 fw-bold">Rate</div>
+      <div class="col">{{selectedBook.rate}}</div>
+    </div>
+  </div>
+  <hr />
+  <div class="col-12">
+    <form #form="ngForm" action="" class="g-3 row">
+      <div class="d-flex gap-3">
+        <input [(ngModel)]="feedbackRequest.score" [max]="MAX_SCORE" class="form-range w-25" id="score" min="0"
+               name="score"
+               step="0.5" type="range" />
+        <app-rating [rating]="feedbackRequest.score!" />
+        {{feedbackRequest.score}}
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="comment">Comment</label>
+        <textarea [(ngModel)]="feedbackRequest.comment" [required]="true" class="form-control" id="comment"
+                  name="comment" placeholder="Book feedback" rows="4"></textarea>
+      </div>
+      <div class="col-12 d-flex justify-content-end gap-2">
+        <button (click)="returnBorrowedBook(true)" [disabled]="form.invalid" class="btn btn-outline-primary"
+                type="submit">
+          <em class="fas fa-save">&nbsp;Rate and Return</em>
+        </button>
+        <button (click)="returnBorrowedBook(false)" class="btn btn-outline-success"
+                type="submit">
+          <i class="fas fa-paper-plane"></i>&nbsp;Return without feedback
+        </button>
+        <button (click)="setSelectedBook(undefined)" class="btn btn-link text-danger">
+          <i class="fas fa-times"></i>&nbsp;Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<table *ngIf="!selectedBook" class="table">
+  <thead>
+  <tr>
+    <th scope="col">#</th>
+    <th scope="col">Title</th>
+    <th scope="col">Author</th>
+    <th scope="col">ISBN</th>
+    <th scope="col">Rate</th>
+    <th scope="col"><i class="fas fa-cogs"></i></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let book of bookResponse.content; let i = index">
+    <th scope="row">{{i + 1}}</th>
+    <td>{{book.title}}</td>
+    <td>{{book.authorName}}</td>
+    <td>{{book.isbn}}</td>
+    <td><i class="fas fa-star text-warning"></i>{{book.rate}}</td>
+    <td>
+      <div class="d-flex gap-2">
+        <i *ngIf="book.returned" class="fas fa-paper-plane text-success"></i>
+        <i (click)="setSelectedBook(book)" *ngIf="!book.returned"
+           class="fa-regular fa-paper-plane text-primary cursor-pointer"></i>
+        <i [class.`text-success`]="book.returnApproved" class="fas fa-circle-check"></i>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<app-pagination (pageChange)="page = $event; findAllBorrowedBooks()"
+                *ngIf="!selectedBook"
+                [bookResponse]="bookResponse"
+                [page]="bookResponse.page ?? 0"
+                [size]="size" />

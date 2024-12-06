@@ -19,7 +19,7 @@ export class RegisterComponent {
     email: '',
     password: '',
   };
-  protected errorMsg: Array<String> = [];
+  protected errorMsg: string[] = [];
 
   constructor(
     private router: Router,

@@ -1,0 +1,24 @@
+<h3>My Book list</h3>
+<hr />
+<div class="d-flex justify-content-end mb-3">
+  <a class="btn btn-outline-primary" routerLink="/books/manage">
+    <i class="fas fa-plus"></i>&nbsp;New book
+  </a>
+</div>
+
+<div class="d-flex justify-content-start gap-2 flex-wrap">
+  <app-book-card
+    (archive)="archiveBook($event)"
+    (edit)="editBook($event)"
+    (share)="shareBook($event)"
+    *ngFor="let book of bookResponse.content"
+    [book]="book"
+    [manage]="true"
+  />
+</div>
+
+<app-pagination
+  (pageChange)="page = $event; findAllBooks()"
+  [bookResponse]="bookResponse"
+  [page]="bookResponse.page ?? 0"
+  [size]="size" />

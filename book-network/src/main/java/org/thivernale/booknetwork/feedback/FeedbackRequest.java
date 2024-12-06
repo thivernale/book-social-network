@@ -9,7 +9,7 @@ public record FeedbackRequest(
     double score,
     @NotNull(message = "203") @NotEmpty(message = "203")
     String comment,
-    @NotNull(message = "204") @NotEmpty(message = "204")
+    @NotNull(message = "204") @Positive(message = "204")
     Long bookId
 ) {
 }

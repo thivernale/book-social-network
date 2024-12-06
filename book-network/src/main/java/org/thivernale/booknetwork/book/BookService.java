@@ -38,7 +38,7 @@ public class BookService {
     }
 
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication authentication) {
-        return getPageResponse(repository.findByShareableFalseAndArchivedFalseAndOwner_IdNot(
+        return getPageResponse(repository.findByShareableTrueAndArchivedFalseAndOwner_IdNot(
             getPageable(page, size),
             getCurrentUser(authentication).getId()
         ), bookMapper::toBookResponse);

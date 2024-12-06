@@ -29,11 +29,6 @@ class BookServiceTest {
     private final User otherUser = User.builder()
         .id(2L)
         .build();
-
-    public BookServiceTest() {
-        authentication = new UsernamePasswordAuthenticationToken(currentUser, Collections.EMPTY_LIST);
-    }
-
     @InjectMocks
     private BookService underTest;
     @Mock
@@ -43,9 +38,13 @@ class BookServiceTest {
     @Mock
     private BookMapper bookMapper;
 
+    public BookServiceTest() {
+        authentication = new UsernamePasswordAuthenticationToken(currentUser, Collections.EMPTY_LIST);
+    }
+
     @Test
     void save() {
-        BookRequest request = new BookRequest(null, "Title", "Author Name", "ISBN", "Synopsis", null, true);
+        BookRequest request = new BookRequest(null, "Title", "Author Name", "ISBN", "Synopsis", true);
         when(bookMapper.toBook(any(BookRequest.class))).thenCallRealMethod();
         when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
         Long save = underTest.save(request, authentication);
@@ -79,7 +78,8 @@ class BookServiceTest {
         assertEquals(book.getSynopsis(), bookResponse.getSynopsis());
         assertEquals(book.isArchived(), bookResponse.isArchived());
         assertEquals(book.isShareable(), bookResponse.isShareable());
-        assertEquals(book.getOwner().getFullName(), bookResponse.getOwner());
+        assertEquals(book.getOwner()
+            .getFullName(), bookResponse.getOwner());
         assertEquals(book.getRate(), bookResponse.getRate());
     }
 

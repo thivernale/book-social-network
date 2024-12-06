@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
-    Page<Book> findByShareableFalseAndArchivedFalseAndOwner_IdNot(Pageable pageable, Long id);
+    Page<Book> findByShareableTrueAndArchivedFalseAndOwner_IdNot(Pageable pageable, Long id);
 
     @Query("select b from Book b where b.owner.id <> :id")
     Page<Book> findByOwner_IdNot(Pageable pageable, Long id);

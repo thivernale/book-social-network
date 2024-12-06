@@ -13,7 +13,6 @@ public record BookRequest(
     String isbn,
     @NotNull(message = "103") @NotEmpty(message = "103")
     String synopsis,
-    String bookCover,
     boolean shareable
 ) {
 }

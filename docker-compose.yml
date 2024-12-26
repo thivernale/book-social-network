@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: duke
       POSTGRES_PASSWORD: duke
-      PGDATA: /var/lib/postgres/data
+      PGDATA: /data/postgres
       POSTGRES_DB: book_social_network
     volumes:
       - postgres:/data/postgres

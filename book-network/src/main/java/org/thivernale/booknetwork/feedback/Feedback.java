@@ -1,5 +1,6 @@
 package org.thivernale.booknetwork.feedback;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -25,5 +26,6 @@ public class Feedback extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "book_id")
+    @JsonIgnore
     private Book book;
 }

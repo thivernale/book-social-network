@@ -1,5 +1,6 @@
 package org.thivernale.booknetwork.history;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,6 +27,7 @@ public class BookTransactionHistory extends BaseEntity {
     private User user;
     @ManyToOne
     @JoinColumn(name = "book_id")
+    @JsonIgnore
     private Book book;
 
     private boolean returned;

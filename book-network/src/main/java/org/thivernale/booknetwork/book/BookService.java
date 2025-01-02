@@ -2,6 +2,8 @@ package org.thivernale.booknetwork.book;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -39,10 +41,17 @@ public class BookService {
             .getId();
     }
 
+    @Caching(cacheable = @Cacheable(value = "book_response"))
     public BookResponse findById(Long bookId) {
         return bookMapper.toBookResponse(getBook(bookId));
     }
 
+    @Caching(
+        cacheable = @Cacheable(
+            value = "shareable_books",
+            key = "#p0 + '_' + #p1 + '_' + @bookService.getCurrentUser(#p2).getId()"
+        )
+    )
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication authentication) {
         return getPageResponse(repository.findByShareableTrueAndArchivedFalseAndOwner_IdNot(
             getPageable(page, size),
@@ -163,13 +172,16 @@ public class BookService {
         repository.save(book);
     }
 
+    @Caching(cacheable = @Cacheable(value = "book", key = "#a0"))
     public Book getBook(Long bookId) {
         return repository.findById(bookId)
             .orElseThrow(() -> new EntityNotFoundException("Book not found"));
     }
 
-    private User getCurrentUser(Authentication authentication) {
-        return (User) authentication.getPrincipal();
+    public User getCurrentUser(Authentication authentication) {
+        if (authentication.getPrincipal() instanceof User user)
+            return user;
+        return new User();
     }
 
     private PageRequest getPageable(int page, int size) {

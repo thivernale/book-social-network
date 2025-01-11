@@ -14,5 +14,6 @@ public class BorrowedBookResponse {
     private String isbn;
     private boolean returned;
     private boolean returnApproved;
+    private String owner;
     private double rate;
 }

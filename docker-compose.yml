@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:latest
     container_name: postgres-bsn
+    restart: unless-stopped
     environment:
       POSTGRES_USER: duke
       POSTGRES_PASSWORD: duke
@@ -13,10 +14,12 @@ services:
       - bsn
     ports:
       - '5432:5432'
-    restart: unless-stopped
+
   mail-dev:
     image: maildev/maildev
     container_name: mail-dev-bsn
+    networks:
+      - bsn
     ports:
       - '1025:1025'
       - '1080:1080'

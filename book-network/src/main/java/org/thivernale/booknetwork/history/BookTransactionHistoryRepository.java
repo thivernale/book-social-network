@@ -11,7 +11,14 @@ import java.util.Optional;
 
 @Repository
 public interface BookTransactionHistoryRepository extends JpaRepository<BookTransactionHistory, Long> {
-    @Query("select b from BookTransactionHistory b where b.user.id = :id")
+    @Query(
+        """
+            select b from BookTransactionHistory b
+            where b.user.id = :id
+            group by b.id
+            having b.id = (select max(b2.id) from BookTransactionHistory b2
+                where b2.book.id = b.book.id)"""
+    )
     Page<BookTransactionHistory> findAllBorrowedBooks(Pageable pageable, Long id);
 
     @Query("select b from BookTransactionHistory b where b.book.owner.id = :id")

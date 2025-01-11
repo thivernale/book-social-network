@@ -29,6 +29,12 @@ public class BookService {
     public Long save(BookRequest request, Authentication authentication) {
         Book book = bookMapper.toBook(request);
         book.setOwner(getCurrentUser(authentication));
+
+        if (book.getId() != null) {
+            Book originalBook = getBook(book.getId());
+            book.setBookCover(originalBook.getBookCover());
+        }
+
         return repository.save(book)
             .getId();
     }

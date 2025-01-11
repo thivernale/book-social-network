@@ -1,4 +1,4 @@
-package org.thivernale.booknetwork.auth;
+package deprecated.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -11,13 +11,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegistrationRequest {
-    @NotBlank(message = "Firstname should not be empty")
-    @NotEmpty(message = "Firstname should not be empty")
-    private String firstname;
-    @NotBlank(message = "Lastname should not be empty")
-    @NotEmpty(message = "Lastname should not be empty")
-    private String lastname;
+public class AuthenticationRequest {
     @NotBlank(message = "Email should not be empty")
     @NotEmpty(message = "Email should not be empty")
     @Email(message = "Invalid email")

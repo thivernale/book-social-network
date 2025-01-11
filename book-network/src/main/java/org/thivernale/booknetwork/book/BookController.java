@@ -19,8 +19,8 @@ public class BookController {
     private final BookService service;
 
     @PostMapping
-    public ResponseEntity<Long> saveBook(@RequestBody @Valid BookRequest request, Authentication authentication) {
-        return ResponseEntity.ok(service.save(request, authentication));
+    public ResponseEntity<Long> saveBook(@RequestBody @Valid BookRequest request) {
+        return ResponseEntity.ok(service.save(request));
     }
 
     @GetMapping("{book-id}")
@@ -29,6 +29,7 @@ public class BookController {
     }
 
     @GetMapping
+    //@PreAuthorize("hasRole('bsn-admin-client')")
     public ResponseEntity<PageResponse<BookResponse>> findAllBooks(
         @RequestParam(name = "page", defaultValue = "0", required = false) int page,
         @RequestParam(name = "size", defaultValue = "10", required = false) int size,
@@ -111,6 +112,7 @@ public class BookController {
         Authentication authentication
     ) {
         service.uploadBookCover(bookId, file, authentication);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.accepted()
+            .build();
     }
 }

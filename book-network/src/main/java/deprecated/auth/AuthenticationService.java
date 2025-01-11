@@ -1,37 +1,11 @@
-package org.thivernale.booknetwork.auth;
+package deprecated.auth;
 
-import jakarta.mail.MessagingException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.thivernale.booknetwork.email.EmailService;
-import org.thivernale.booknetwork.email.EmailTemplateName;
-import org.thivernale.booknetwork.role.Role;
-import org.thivernale.booknetwork.role.RoleRepository;
-import org.thivernale.booknetwork.security.JwtService;
-import org.thivernale.booknetwork.user.Token;
-import org.thivernale.booknetwork.user.TokenRepository;
-import org.thivernale.booknetwork.user.User;
-import org.thivernale.booknetwork.user.UserRepository;
 
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
-@Service
+//@Service
 @RequiredArgsConstructor
 class AuthenticationService {
-
+/*
     private static final int ACTIVATION_CODE_LENGTH = 6;
     private static final int ACTIVATION_CODE_VALIDITY = 15;
 
@@ -126,7 +100,8 @@ class AuthenticationService {
         Token savedToken = tokenRepository.findByToken(token)
             .orElseThrow(() -> new NoSuchElementException("Invalid token"));
 
-        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
+        if (LocalDateTime.now()
+            .isAfter(savedToken.getExpiresAt())) {
             sendActivationEmail(savedToken.getUser());
             throw new CredentialsExpiredException(
                 "Activation token has expired. A new token has been sent to the user."
@@ -145,5 +120,5 @@ class AuthenticationService {
 
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
-    }
+    }*/
 }

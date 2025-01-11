@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificationExecutor<Book> {
-    Page<Book> findByShareableTrueAndArchivedFalseAndOwner_IdNot(Pageable pageable, Long id);
+    Page<Book> findByShareableTrueAndArchivedFalseAndCreatedByNot(Pageable pageable, String id);
 
-    @Query("select b from Book b where b.owner.id <> :id")
-    Page<Book> findByOwner_IdNot(Pageable pageable, Long id);
+    @Query("select b from Book b where b.createdBy <> :id")
+    Page<Book> findByCreatedByNot(Pageable pageable, String id);
 }

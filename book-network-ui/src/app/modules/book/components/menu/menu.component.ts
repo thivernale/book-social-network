@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { JwtHelperService } from '@auth0/angular-jwt';
-import { TokenService } from '../../../../token/token.service';
+import { KeycloakService } from '../../../../services/keycloak/keycloak.service';
 
 @Component({
   selector: 'app-menu',
@@ -15,7 +14,7 @@ import { TokenService } from '../../../../token/token.service';
 export class MenuComponent implements OnInit {
   protected username = '';
 
-  constructor(private tokenService: TokenService, private router: Router) {
+  constructor(private keycloakService: KeycloakService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -32,12 +31,10 @@ export class MenuComponent implements OnInit {
       });
     });
 
-    const jwtHelper = new JwtHelperService();
-    this.username = jwtHelper.decodeToken<any>(this.tokenService.token).fullName;
+    this.username = this.keycloakService.profile?.name ?? '';
   }
 
   protected async logout() {
-    this.tokenService.token = '';
-    await this.router.navigate(['login']);
+    await this.keycloakService.logout();
   }
 }

@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 import org.thivernale.booknetwork.common.BaseEntity;
 import org.thivernale.booknetwork.feedback.Feedback;
 import org.thivernale.booknetwork.history.BookTransactionHistory;
-import org.thivernale.booknetwork.user.User;
 
 import java.util.List;
 
@@ -29,9 +28,9 @@ public class Book extends BaseEntity {
     private boolean archived;
     private boolean shareable;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
+//    @ManyToOne
+//    @JoinColumn(name = "owner_id")
+//    private User owner;
 
     @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
     private List<Feedback> feedbacks;

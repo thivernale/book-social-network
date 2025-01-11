@@ -28,8 +28,7 @@ public class BookMapper {
             .rate(book.getRate())
             .archived(book.isArchived())
             .shareable(book.isShareable())
-            .owner(book.getOwner()
-                .getFullName())
+            .owner(book.getCreatedBy())
             .bookCover(FileUtils.readFileFromLocation(book.getBookCover()))
             .build();
     }
@@ -42,6 +41,7 @@ public class BookMapper {
             .authorName(book.getAuthorName())
             .isbn(book.getIsbn())
             .rate(book.getRate())
+            .owner(book.getCreatedBy())
             .returned(history.isReturned())
             .returnApproved(history.isReturnApproved())
             .build();

@@ -1,4 +1,4 @@
-package org.thivernale.booknetwork.email;
+package deprecated.email;
 
 
 import lombok.Getter;

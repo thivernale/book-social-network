@@ -11,38 +11,51 @@ import java.util.Optional;
 
 @Repository
 public interface BookTransactionHistoryRepository extends JpaRepository<BookTransactionHistory, Long> {
-    @Query("select b from BookTransactionHistory b where b.user.id = :id")
-    Page<BookTransactionHistory> findAllBorrowedBooks(Pageable pageable, Long id);
+    @Query(
+        """
+            select b from BookTransactionHistory b
+            where b.userId = :id 
+            group by b.id 
+            having b.id = (select max(b2.id) from BookTransactionHistory b2 
+                where b2.book.id = b.book.id)"""
+    )
+    Page<BookTransactionHistory> findAllBorrowedBooks(Pageable pageable, String id);
 
-    @Query("select b from BookTransactionHistory b where b.book.owner.id = :id")
-    Page<BookTransactionHistory> findAllReturnedBooks(Pageable pageable, Long id);
+    @Query("select b from BookTransactionHistory b where b.book.createdBy = :id")
+    Page<BookTransactionHistory> findAllReturnedBooks(Pageable pageable, String id);
 
     @Query(
         """
             select (count(b) > 0) from BookTransactionHistory b
             where b.book.id = :bookId
-            and b.user.id = :userId
+            and b.userId = :userId
             and b.returnApproved = false"""
     )
-    boolean isBorrowedByUser(Long bookId, Long userId);
+    boolean isBorrowedByUser(Long bookId, String userId);
 
     @Query(
         """
             select b from BookTransactionHistory b
             where b.book.id = :bookId
-            and b.user.id = :userId
+            and b.userId = :userId
             and b.returned = false
             and b.returnApproved = false"""
     )
-    Optional<BookTransactionHistory> findByBookIdAndUserId(@Param("bookId") Long bookId, @Param("userId") Long userId);
+    Optional<BookTransactionHistory> findByBookIdAndUserId(
+        @Param("bookId") Long bookId,
+        @Param("userId") String userId
+    );
 
     @Query(
         """
             select b from BookTransactionHistory b
             where b.book.id = :bookId
-            and b.book.owner.id = :userId
+            and b.book.createdBy = :userId
             and b.returned = true
             and b.returnApproved = false"""
     )
-    Optional<BookTransactionHistory> findByBookIdAndOwnerId(@Param("bookId") Long bookId, @Param("userId") Long userId);
+    Optional<BookTransactionHistory> findByBookIdAndCreatedBy(
+        @Param("bookId") Long bookId,
+        @Param("userId") String userId
+    );
 }

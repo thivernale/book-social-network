@@ -1,15 +1,15 @@
-package org.thivernale.booknetwork.role;
+package deprecated.role;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.thivernale.booknetwork.user.User;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@EntityListeners(AuditingEntityListener.class)
+//@EntityListeners(AuditingEntityListener.class)
 public class Role implements Serializable {
     @Id
     @GeneratedValue
@@ -25,8 +25,8 @@ public class Role implements Serializable {
     @Column(unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    //    @ManyToMany(mappedBy = "roles")
+//    private List<User> users;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

@@ -15,11 +15,12 @@ public class FeedbackMapper {
             .build();
     }
 
-    public FeedbackResponse toFeedbackResponse(Feedback feedback, Long userId) {
+    public FeedbackResponse toFeedbackResponse(Feedback feedback, String createdBy) {
         return FeedbackResponse.builder()
             .id(feedback.getId())
             .score(feedback.getScore())
-            .ownFeedback(feedback.getCreatedBy().equals(userId))
+            .ownFeedback(feedback.getCreatedBy()
+                .equals(createdBy))
             .build();
     }
 }

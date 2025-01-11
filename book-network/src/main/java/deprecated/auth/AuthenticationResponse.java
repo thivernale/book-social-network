@@ -1,4 +1,4 @@
-package org.thivernale.booknetwork.auth;
+package deprecated.auth;
 
 import lombok.Builder;
 import lombok.Getter;

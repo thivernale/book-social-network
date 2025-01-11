@@ -1,17 +1,18 @@
-package org.thivernale.booknetwork.user;
+package deprecated.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import deprecated.role.Role;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.thivernale.booknetwork.book.Book;
 import org.thivernale.booknetwork.history.BookTransactionHistory;
-import org.thivernale.booknetwork.role.Role;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -24,9 +25,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "_user")
-@EntityListeners(AuditingEntityListener.class)
+//@Entity
+//@Table(name = "_user")
+//@EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails, Principal {
     @Id
     @GeneratedValue
@@ -40,15 +41,15 @@ public class User implements UserDetails, Principal {
     private boolean accountLocked;
     private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JsonIgnore
+    //    @ManyToMany(fetch = FetchType.EAGER)
+//    @JsonIgnore
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "owner")
+    //    @OneToMany(mappedBy = "owner")
     @JsonIgnore
     private List<Book> books;
 
-    @OneToMany(mappedBy = "user")
+    //    @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<BookTransactionHistory> histories;
 

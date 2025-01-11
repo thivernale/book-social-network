@@ -1,6 +1,7 @@
 package org.thivernale.booknetwork.feedback;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -11,12 +12,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thivernale.booknetwork.book.Book;
 import org.thivernale.booknetwork.book.BookService;
 import org.thivernale.booknetwork.common.PageResponse;
 import org.thivernale.booknetwork.exception.OperationNotPermittedException;
-import org.thivernale.booknetwork.user.User;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,20 +30,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-//@WithMockUser()
+@WithMockUser(username = "currentUser")
 //@WithUserDetails(userDetailsServiceBeanName = "userDetailsServiceImpl")
 class FeedbackServiceTest {
-    private final Authentication authentication;
-    private final User currentUser = User.builder()
-        .id(1L)
-        .build();
-    private final User otherUser = User.builder()
-        .id(2L)
-        .build();
-
-    public FeedbackServiceTest() {
-        this.authentication = new UsernamePasswordAuthenticationToken(currentUser, Collections.EMPTY_LIST);
-    }
+    private Authentication authentication;
+    private Authentication otherUser;
 
     @InjectMocks
     private FeedbackService underTest;
@@ -50,6 +45,14 @@ class FeedbackServiceTest {
     @Mock
     private BookService bookService;
 
+    @BeforeEach
+    void setUp() {
+        authentication = SecurityContextHolder.getContext()
+            .getAuthentication();
+        otherUser = new UsernamePasswordAuthenticationToken(new User("otherUser", "password",
+            List.of(new SimpleGrantedAuthority("ROLE_USER"))), Collections.EMPTY_LIST);
+    }
+
     @Test
     void save() {
         Book book = Book.builder()
@@ -58,7 +61,7 @@ class FeedbackServiceTest {
             .authorName("Author Name")
             .synopsis("Synopsis")
             .isbn("ISBN")
-            .owner(currentUser)
+            .createdBy(authentication.getName())
             .shareable(true)
             .build();
         FeedbackRequest request = new FeedbackRequest(5, "Comment", book.getId());
@@ -80,7 +83,7 @@ class FeedbackServiceTest {
         var exception = assertThrows(OperationNotPermittedException.class, executable);
         assertEquals("Book cannot be given feedback by owner", exception.getMessage());
 
-        book.setOwner(otherUser);
+        book.setCreatedBy(otherUser.getName());
 
         Long save = underTest.save(request, authentication);
         assertEquals(feedback.getId(), save);
@@ -100,14 +103,14 @@ class FeedbackServiceTest {
         Page<Feedback> pageResult = new PageImpl<>(List.of(feedbackResult));/*Page.empty()*/
 
         when(repository.findByBook_Id(any(Long.class), any(Pageable.class))).thenReturn(pageResult);
-        when(feedbackMapper.toFeedbackResponse(any(Feedback.class), any(Long.class))).thenAnswer(invocation -> {
+        when(feedbackMapper.toFeedbackResponse(any(Feedback.class), any(String.class))).thenAnswer(invocation -> {
             Feedback feedback = invocation.getArgument(0);
             return FeedbackResponse.builder()
                 .id(feedback.getId())
                 .score(feedback.getScore())
                 .comment(feedback.getComment())
                 .ownFeedback(invocation.getArgument(1)
-                    .equals(currentUser.getId()))
+                    .equals(authentication.getName()))
                 .build();
         });
 

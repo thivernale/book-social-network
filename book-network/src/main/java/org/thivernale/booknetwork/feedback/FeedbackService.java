@@ -10,7 +10,6 @@ import org.thivernale.booknetwork.book.Book;
 import org.thivernale.booknetwork.book.BookService;
 import org.thivernale.booknetwork.common.PageResponse;
 import org.thivernale.booknetwork.exception.OperationNotPermittedException;
-import org.thivernale.booknetwork.user.User;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -28,9 +27,7 @@ public class FeedbackService {
             throw new OperationNotPermittedException(
                 "Book cannot be given feedback since it is archived or not shareable");
         }
-        User user = getCurrentUser(authentication);
-        if (Objects.equals(user.getId(), book.getOwner()
-            .getId())) {
+        if (Objects.equals(authentication.getName(), book.getCreatedBy())) {
             throw new OperationNotPermittedException("Book cannot be given feedback by owner");
         }
         Feedback feedback = feedbackMapper.toFeedback(request);
@@ -47,11 +44,7 @@ public class FeedbackService {
         return getPageResponse(repository.findByBook_Id(
             bookId,
             getPageable(page, size)
-        ), f -> feedbackMapper.toFeedbackResponse(f, getCurrentUser(authentication).getId()));
-    }
-
-    private User getCurrentUser(Authentication authentication) {
-        return (User) authentication.getPrincipal();
+        ), f -> feedbackMapper.toFeedbackResponse(f, authentication.getName()));
     }
 
     private PageRequest getPageable(int page, int size) {

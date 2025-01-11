@@ -1,6 +1,7 @@
 package org.thivernale.booknetwork.book;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.function.Executable;
@@ -8,27 +9,30 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thivernale.booknetwork.exception.OperationNotPermittedException;
 import org.thivernale.booknetwork.history.BookTransactionHistory;
 import org.thivernale.booknetwork.history.BookTransactionHistoryRepository;
-import org.thivernale.booknetwork.user.User;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
+@WithMockUser(username = "currentUser")
+@ContextConfiguration
 class BookServiceTest {
-    private final Authentication authentication;
-    private final User currentUser = User.builder()
-        .id(1L)
-        .build();
-    private final User otherUser = User.builder()
-        .id(2L)
-        .build();
+    private Authentication authentication;
+    private Authentication otherUser;
+
     @InjectMocks
     private BookService underTest;
     @Mock
@@ -38,8 +42,12 @@ class BookServiceTest {
     @Mock
     private BookMapper bookMapper;
 
-    public BookServiceTest() {
-        authentication = new UsernamePasswordAuthenticationToken(currentUser, Collections.EMPTY_LIST);
+    @BeforeEach
+    void setUp() {
+        authentication = SecurityContextHolder.getContext()
+            .getAuthentication();
+        otherUser = new UsernamePasswordAuthenticationToken(new User("otherUser", "password",
+            List.of(new SimpleGrantedAuthority("ROLE_USER"))), Collections.EMPTY_LIST);
     }
 
     @Test
@@ -47,7 +55,7 @@ class BookServiceTest {
         BookRequest request = new BookRequest(null, "Title", "Author Name", "ISBN", "Synopsis", true);
         when(bookMapper.toBook(any(BookRequest.class))).thenCallRealMethod();
         when(repository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        Long save = underTest.save(request, authentication);
+        Long save = underTest.save(request);
         assertEquals(request.id(), save);
     }
 
@@ -60,11 +68,9 @@ class BookServiceTest {
             .authorName("Author Name")
             .synopsis("Synopsis")
             .isbn("ISBN")
-            .owner(currentUser)
+            .createdBy(authentication.getName())
             .shareable(true)
             .build();
-        currentUser.setFirstname("T");
-        currentUser.setLastname("H");
 
         when(repository.findById(bookId))
             .thenReturn(Optional.of(book));
@@ -78,8 +84,7 @@ class BookServiceTest {
         assertEquals(book.getSynopsis(), bookResponse.getSynopsis());
         assertEquals(book.isArchived(), bookResponse.isArchived());
         assertEquals(book.isShareable(), bookResponse.isShareable());
-        assertEquals(book.getOwner()
-            .getFullName(), bookResponse.getOwner());
+        assertEquals(book.getCreatedBy(), bookResponse.getOwner());
         assertEquals(book.getRate(), bookResponse.getRate());
     }
 
@@ -88,12 +93,12 @@ class BookServiceTest {
         Long bookId = 1L;
         Book book = Book.builder()
             .id(bookId)
-            .owner(currentUser)
+            .createdBy(authentication.getName())
             .shareable(false)
             .build();
         Book bookSaved = Book.builder()
             .id(bookId)
-            .owner(currentUser)
+            .createdBy(authentication.getName())
             .shareable(true)
             .build();
 
@@ -105,11 +110,11 @@ class BookServiceTest {
         when(repository.save(book))
             .thenReturn(bookSaved);
 
-        book.setOwner(otherUser);
+        book.setCreatedBy(otherUser.getName());
         assertThrows(OperationNotPermittedException.class, () ->
             underTest.updateShareableStatus(bookId, authentication));
 
-        book.setOwner(currentUser);
+        book.setCreatedBy(authentication.getName());
         Long result = assertDoesNotThrow(() -> underTest.updateShareableStatus(bookId, authentication));
         assertEquals(bookId, result);
         verify(repository, times(1))
@@ -121,12 +126,12 @@ class BookServiceTest {
         Long bookId = 1L;
         Book book = Book.builder()
             .id(bookId)
-            .owner(currentUser)
+            .createdBy(authentication.getName())
             .archived(false)
             .build();
         Book bookSaved = Book.builder()
             .id(bookId)
-            .owner(currentUser)
+            .createdBy(authentication.getName())
             .archived(true)
             .build();
         Executable executable = () -> underTest.updateArchivedStatus(bookId, authentication);
@@ -138,10 +143,10 @@ class BookServiceTest {
         when(repository.save(book))
             .thenReturn(bookSaved);
 
-        book.setOwner(otherUser);
+        book.setCreatedBy(otherUser.getName());
         assertThrows(OperationNotPermittedException.class, executable);
 
-        book.setOwner(currentUser);
+        book.setCreatedBy(authentication.getName());
         Long result = assertDoesNotThrow(() -> underTest.updateArchivedStatus(bookId, authentication));
         assertEquals(bookId, result);
         verify(repository, times(1))
@@ -153,7 +158,7 @@ class BookServiceTest {
         Long bookId = 1L;
         Book book = Book.builder()
             .id(bookId)
-            .owner(currentUser)
+            .createdBy(authentication.getName())
             .archived(false)
             .shareable(false)
             .build();
@@ -176,14 +181,14 @@ class BookServiceTest {
         ex = assertThrows(OperationNotPermittedException.class, executable);
         assertEquals("Book cannot be borrowed by owner", ex.getMessage());
 
-        book.setOwner(otherUser);
-        when(historyRepository.isBorrowedByUser(bookId, currentUser.getId()))
+        book.setCreatedBy(otherUser.getName());
+        when(historyRepository.isBorrowedByUser(bookId, authentication.getName()))
             .thenReturn(true);
         ex = assertThrows(OperationNotPermittedException.class, executable);
         assertEquals("Book is already borrowed", ex.getMessage());
 
         Long historyId = 123L;
-        when(historyRepository.isBorrowedByUser(bookId, currentUser.getId()))
+        when(historyRepository.isBorrowedByUser(bookId, authentication.getName()))
             .thenReturn(false);
         when(historyRepository.save(any(BookTransactionHistory.class)))
             .thenAnswer(invocation -> {
@@ -202,7 +207,7 @@ class BookServiceTest {
         Long bookId = 1L;
         Book book = Book.builder()
             .id(bookId)
-            .owner(currentUser)
+            .createdBy(authentication.getName())
             .archived(false)
             .shareable(false)
             .build();
@@ -210,7 +215,7 @@ class BookServiceTest {
         BookTransactionHistory history = BookTransactionHistory.builder()
             .id(123L)
             .book(book)
-            .user(currentUser)
+            .userId(authentication.getName())
             .returned(false)
             .returnApproved(false)
             .build();
@@ -232,13 +237,13 @@ class BookServiceTest {
         ex = assertThrows(OperationNotPermittedException.class, executable);
         assertEquals("Book cannot be returned by owner", ex.getMessage());
 
-        book.setOwner(otherUser);
-        when(historyRepository.findByBookIdAndUserId(bookId, currentUser.getId()))
+        book.setCreatedBy(otherUser.getName());
+        when(historyRepository.findByBookIdAndUserId(bookId, authentication.getName()))
             .thenReturn(Optional.empty());
         ex = assertThrows(OperationNotPermittedException.class, executable);
         assertEquals("Book was not borrowed by user", ex.getMessage());
 
-        when(historyRepository.findByBookIdAndUserId(bookId, currentUser.getId()))
+        when(historyRepository.findByBookIdAndUserId(bookId, authentication.getName()))
             .thenReturn(Optional.of(history));
         when(historyRepository.save(any(BookTransactionHistory.class)))
             .thenAnswer(invocation -> {
@@ -257,7 +262,7 @@ class BookServiceTest {
         Long bookId = 1L;
         Book book = Book.builder()
             .id(bookId)
-            .owner(currentUser)
+            .createdBy(authentication.getName())
             .archived(false)
             .shareable(false)
             .build();
@@ -265,7 +270,7 @@ class BookServiceTest {
         BookTransactionHistory history = BookTransactionHistory.builder()
             .id(123L)
             .book(book)
-            .user(otherUser)
+            .userId(otherUser.getName())
             .returned(true)
             .returnApproved(false)
             .build();
@@ -284,17 +289,17 @@ class BookServiceTest {
         assertEquals("Book cannot be returned since it is archived or not shareable", ex.getMessage());
 
         book.setArchived(false);
-        book.setOwner(otherUser);
+        book.setCreatedBy(otherUser.getName());
         ex = assertThrows(OperationNotPermittedException.class, executable);
         assertEquals("Book return can be approved only by owner", ex.getMessage());
 
-        book.setOwner(currentUser);
-        when(historyRepository.findByBookIdAndOwnerId(bookId, currentUser.getId()))
+        book.setCreatedBy(authentication.getName());
+        when(historyRepository.findByBookIdAndCreatedBy(bookId, authentication.getName()))
             .thenReturn(Optional.empty());
         ex = assertThrows(OperationNotPermittedException.class, executable);
         assertEquals("Book is not pending return approval", ex.getMessage());
 
-        when(historyRepository.findByBookIdAndOwnerId(bookId, currentUser.getId()))
+        when(historyRepository.findByBookIdAndCreatedBy(bookId, authentication.getName()))
             .thenReturn(Optional.of(history));
         when(historyRepository.save(any(BookTransactionHistory.class)))
             .thenAnswer(invocation -> {

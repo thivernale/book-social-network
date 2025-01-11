@@ -1,11 +1,10 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-
-import { TokenService } from '../../token/token.service';
+import { KeycloakService } from '../keycloak/keycloak.service';
 
 export const httpTokenInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = inject(TokenService).token;
-  if (token == null) {
+  const token = inject(KeycloakService).keycloak?.token;
+  if (!token) {
     return next(req);
   }
   const modifiedReq = req.clone({

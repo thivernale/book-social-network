@@ -5,14 +5,13 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.thivernale.booknetwork.user.User;
 
 import java.util.Optional;
 
-public class ApplicationAuditorAware implements AuditorAware<Long> {
+public class ApplicationAuditorAware implements AuditorAware<String> {
     @Override
     @NonNull
-    public Optional<Long> getCurrentAuditor() {
+    public Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext()
             .getAuthentication();
 
@@ -23,6 +22,6 @@ public class ApplicationAuditorAware implements AuditorAware<Long> {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(((User) authentication.getPrincipal()).getId());
+        return Optional.ofNullable(authentication.getName());
     }
 }

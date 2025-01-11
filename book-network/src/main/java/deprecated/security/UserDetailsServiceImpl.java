@@ -1,14 +1,13 @@
-package org.thivernale.booknetwork.security;
+package deprecated.security;
 
+import deprecated.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import org.thivernale.booknetwork.user.UserRepository;
 
-@Service
+//@Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -17,6 +16,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return userRepository.findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

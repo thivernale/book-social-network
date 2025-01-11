@@ -51,7 +51,7 @@ class FileStorageServiceTest {
     void saveFile() {
         assertEquals(System.getProperty("java.io.tmpdir"), fileUploadPath);
 
-        long userId = 1L;
+        String userId = "1";
         assertThrows(NullPointerException.class, () -> underTest.saveFile(null, userId));
 
         MultipartFile file = new MockMultipartFile(
@@ -62,7 +62,7 @@ class FileStorageServiceTest {
         );
 
         String savedFilePath = underTest.saveFile(file, userId);
-        Path targetFolder = Paths.get(fileUploadPath, USERS_UPLOAD_DIR, String.valueOf(userId));
+        Path targetFolder = Paths.get(fileUploadPath, USERS_UPLOAD_DIR, userId);
         Path savedFile = Paths.get(savedFilePath);
 
         assertThat(targetFolder).exists()

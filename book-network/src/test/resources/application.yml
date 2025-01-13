@@ -31,35 +31,7 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
-    #    database: postgresql
     open-in-view: false
-    #    database-platform: org.hibernate.dialect.PostgreSQLDialect
-  #  mail:
-  #    host: localhost
-  #    port: 1025
-  #    username:
-  #    password:
-  #    properties:
-  #      mail:
-  #        smtp:
-  #          trust: "*"
-  #        auth: true
-  #        starttls:
-  #          enable: true
-  #        connection-timeout: 5000
-  #        timeout: 3000
-  #        write-timeout: 5000
-  cache:
-    type: redis
-    redis:
-      time-to-live: 30s
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      database: 0
-      url: redis://localhost:6379/0
 
   security:
     oauth2:
@@ -69,17 +41,8 @@ spring:
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
 application:
-  security:
-    jwt:
-      #      secretKey: secret
-      #      expiration: 86_400_000
-      auth:
-        converter:
-          resource-id: bsn-rest-api
-          principal-attribute: preferred_username
   frontend:
     url: http://localhost:4200
-  #    activation-url: ${application.frontend.url}/activate-account
   file:
     upload:
       photos-output-path: ./uploads

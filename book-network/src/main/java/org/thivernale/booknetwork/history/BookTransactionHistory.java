@@ -18,9 +18,7 @@ import org.thivernale.booknetwork.common.BaseEntity;
 @Entity
 @Table(name = "book_transaction_history")
 public class BookTransactionHistory extends BaseEntity {
-    //    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+
     @Column(name = "user_id")
     private String userId;
 

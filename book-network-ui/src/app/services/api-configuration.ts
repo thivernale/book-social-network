@@ -15,7 +15,7 @@ export class ApiConfiguration {
 }
 
 /**
- * Parameters for `ApiModule.forRoot()`
+ * Parameters for `.forRoot()`
  */
 export interface ApiConfigurationParams {
   rootUrl?: string;

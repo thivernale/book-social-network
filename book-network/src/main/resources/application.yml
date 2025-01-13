@@ -6,6 +6,8 @@ spring:
       max-file-size: 50MB
   devtools:
     add-properties: false
+  thymeleaf:
+    check-template-location: false
 
 springdoc:
   default-produces-media-type: application/json
@@ -31,24 +33,7 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
-    #    database: postgresql
     open-in-view: false
-    #    database-platform: org.hibernate.dialect.PostgreSQLDialect
-  #  mail:
-  #    host: localhost
-  #    port: 1025
-  #    username:
-  #    password:
-  #    properties:
-  #      mail:
-  #        smtp:
-  #          trust: "*"
-  #        auth: true
-  #        starttls:
-  #          enable: true
-  #        connection-timeout: 5000
-  #        timeout: 3000
-  #        write-timeout: 5000
 
   security:
     oauth2:
@@ -60,15 +45,12 @@ spring:
 application:
   security:
     jwt:
-      #      secretKey: secret
-      #      expiration: 86_400_000
       auth:
         converter:
           resource-id: bsn-rest-api
           principal-attribute: preferred_username
   frontend:
     url: http://localhost:4200
-  #    activation-url: ${application.frontend.url}/activate-account
   file:
     upload:
       photos-output-path: ./uploads

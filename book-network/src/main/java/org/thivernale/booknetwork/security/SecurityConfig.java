@@ -17,8 +17,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-    //private final AuthenticationProvider authenticationProvider;
-    //private final JwtFilter jwtAuthFilter;
     private final JwtAuthConverter jwtAuthConverter;
 
     @Bean
@@ -43,8 +41,6 @@ public class SecurityConfig {
                 .anyRequest()
                 .authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-//            .authenticationProvider(authenticationProvider)
-//            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .oauth2ResourceServer(conf -> conf.jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthConverter)))
             .build();
     }

@@ -14,9 +14,9 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
     @Query(
         """
             select b from BookTransactionHistory b
-            where b.userId = :id 
-            group by b.id 
-            having b.id = (select max(b2.id) from BookTransactionHistory b2 
+            where b.userId = :id
+            group by b.id
+            having b.id = (select max(b2.id) from BookTransactionHistory b2
                 where b2.book.id = b.book.id)"""
     )
     Page<BookTransactionHistory> findAllBorrowedBooks(Pageable pageable, String id);

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 
 import { BookService } from '../../../../services/services/book.service';
 import { PageResponseBookResponse } from '../../../../services/models/page-response-book-response';
@@ -25,7 +24,6 @@ export class BookListComponent implements OnInit {
 
   constructor(
     private bookService: BookService,
-    private router: Router,
   ) {
   }
 

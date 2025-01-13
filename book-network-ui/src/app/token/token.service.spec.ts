@@ -8,19 +8,25 @@ describe('TokenService', () => {
   const mockGetItem = jasmine.createSpy('getItem');
   const mockSetItem = jasmine.createSpy('setItem');
   const mockRemoveItem = jasmine.createSpy('removeItem');
-  Object.defineProperty(window, 'localStorage', {
+  const localStorageOrig = window.localStorage;
+  const localStorageMock = {
     value: {
       getItem: mockGetItem,
       setItem: mockSetItem,
       removeItem: mockRemoveItem,
     },
-  });
+  };
 
   beforeEach(() => {
+    Object.defineProperty(window, 'localStorage', localStorageMock);
     TestBed.configureTestingModule({
       providers: [],
     });
     service = TestBed.inject(TokenService);
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'localStorage', localStorageOrig);
   });
 
   it('should be created', () => {
@@ -38,5 +44,6 @@ describe('TokenService', () => {
     expect(mockGetItem).toHaveBeenCalledTimes(1);
     expect(mockGetItem).toHaveBeenCalledWith('token');
     expect(token).toEqual('123');
+    mockGetItem.and.stub();
   });
 });

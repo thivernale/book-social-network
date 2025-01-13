@@ -32,8 +32,10 @@ export class MenuComponent implements OnInit {
       });
     });
 
-    const jwtHelper = new JwtHelperService();
-    this.username = jwtHelper.decodeToken<any>(this.tokenService.token).fullName;
+    if (this.tokenService.token) {
+      const jwtHelper = new JwtHelperService();
+      this.username = jwtHelper.decodeToken<any>(this.tokenService.token)?.fullName ?? '';
+    }
   }
 
   protected async logout() {

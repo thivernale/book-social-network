@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { KeycloakService } from '../../../../services/keycloak/keycloak.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { KeycloakService } from '../../../../services/keycloak/keycloak.service'
 export class MenuComponent implements OnInit {
   protected username = '';
 
-  constructor(private keycloakService: KeycloakService, private router: Router) {
+  constructor(private keycloakService: KeycloakService) {
   }
 
   ngOnInit(): void {

@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ManageBookComponent } from './manage-book.component';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
 describe('ManageBookComponent', () => {
   let component: ManageBookComponent;
@@ -9,6 +12,11 @@ describe('ManageBookComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ManageBookComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+      ],
     })
       .compileComponents();
 

@@ -1,5 +1,4 @@
 import { Component, effect, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
 
 import { BookService } from '../../../../services/services/book.service';
@@ -30,7 +29,6 @@ export class MyReturnedBooksComponent implements OnInit {
 
   constructor(
     private bookService: BookService,
-    private router: Router,
   ) {
   }
 

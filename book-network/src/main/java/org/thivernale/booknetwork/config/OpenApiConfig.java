@@ -20,8 +20,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
         termsOfService = "ToS"
     ),
     servers = {
-        @Server(url = "http://localhost:8080/api/v1", description = "Local environment"),
-        @Server(url = "https://some-url.com/api/v1", description = "Production environment")
+        @Server(url = "http://localhost:${server.port:8080}/api/v1", description = "Local environment"),
+        @Server(url = "https://bsn-api.thivernale.org/api/v1", description = "Production environment")
     },
     security = {
         @SecurityRequirement(name = "bearerAuth")

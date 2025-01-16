@@ -9,6 +9,7 @@
     "test": "ng test",
     "test:ci": "ng test --code-coverage --browsers=ChromeHeadless --watch=false",
     "api-gen": "ng-openapi-gen --input ./src/openapi/openapi.json --output ./src/app/services",
+    "api-gen:url": "ng-openapi-gen --module false --input http://localhost:8088/api/v1/v3/api-docs --output ./src/app/services",
     "lint": "ng lint"
   },
   "private": true,

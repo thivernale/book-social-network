@@ -4,7 +4,6 @@
 
 export interface BookRequest {
   authorName: string;
-  bookCover?: string;
   id?: number;
   isbn: string;
   shareable?: boolean;

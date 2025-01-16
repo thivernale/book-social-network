@@ -1,0 +1,6 @@
+.*
+*.iml
+Dockerfile
+README.md
+node_modules
+dist

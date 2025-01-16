@@ -1,0 +1,68 @@
+name: book-social-network
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-bsn
+    restart: unless-stopped
+    environment:
+      PGDATA: /data/postgres
+      POSTGRES_DB: book_social_network
+    #      POSTGRES_USER: ''
+    #      POSTGRES_PASSWORD: ''
+    env_file:
+      - path: .env.postgres
+        required: false
+    volumes:
+      - postgres:/data/postgres
+    networks:
+      - bsn
+    ports:
+      - '5432:5432'
+
+  mail-dev:
+    image: maildev/maildev
+    container_name: mail-dev-bsn
+    profiles: [ 'local' ]
+    networks:
+      - bsn
+    ports:
+      - '1025:1025'
+      - '1080:1080'
+
+  bsn-api:
+    image: bsn/bsn:1.0.0
+    container_name: bsn-api
+    ports:
+      - 8088:8088
+    networks:
+      - bsn
+    depends_on:
+      - postgres
+    environment:
+      APPLICATION_FRONTEND_URL: http://localhost:8080
+    env_file:
+      - path: .env.backend
+        required: false
+    volumes:
+      - uploads:/app/uploads
+
+  bsn-ui:
+    image: bsn/bsn-ui:1.0.0
+    container_name: bsn-ui
+    ports:
+      - 8080:80
+    networks:
+      - bsn
+    depends_on:
+      - bsn-api
+
+networks:
+  bsn:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local
+  uploads:
+    driver: local

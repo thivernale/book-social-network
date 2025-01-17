@@ -31,7 +31,7 @@ services:
       - '1080:1080'
 
   bsn-api:
-    image: bsn/bsn:1.0.0
+    image: bsn/bsn-api:1.0.0
     container_name: bsn-api
     ports:
       - 8088:8088
@@ -66,3 +66,6 @@ volumes:
     driver: local
   uploads:
     driver: local
+
+# Run locally
+# docker-compose -f ./docker-compose.yml up -d

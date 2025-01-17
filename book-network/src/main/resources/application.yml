@@ -6,6 +6,42 @@ spring:
       max-file-size: 50MB
   devtools:
     add-properties: false
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:book_social_network}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  mail:
+    host:
+    port: 465
+    protocol: smtp
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            trust: "*"
+          starttls:
+            enable: true
+
+application:
+  security:
+    jwt:
+      secretKey: secret
+      expiration: 86_400_000
+  frontend:
+    url: http://localhost:8080
+    activation-url: ${application.frontend.url}/activate-account
+  file:
+    upload:
+      photos-output-path: ./uploads
 
 springdoc:
   default-produces-media-type: application/json
@@ -32,9 +68,7 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
-    #    database: postgresql
     open-in-view: false
-  #    database-platform: org.hibernate.dialect.PostgreSQLDialect
   mail:
     host: localhost
     port: 1025

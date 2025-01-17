@@ -24,3 +24,6 @@ ENV APP_VERSION=${APP_VERSION}
 ENV DB_HOST=postgres
 
 CMD java -jar -Dspring.profiles.active=${PROFILE} app-${APP_VERSION}.jar
+
+# Run locally with:
+# docker build -t bsn/bsn-api:1.0.0 -f ./book-network/Dockerfile ./book-network/

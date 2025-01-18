@@ -1,0 +1,156 @@
+name: BSN Backend Pipeline
+
+on:
+  push:
+    branches: [ 'master' ]
+    paths: [ 'book-network/**', 'docker/docker-compose.yml' '.github/workflows/*-backend.yml' ]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: book-network
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/bsn-api
+
+jobs:
+  compile:
+    name: Compile backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK 21
+        uses: actions/setup-jdk@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+          cache: 'maven'
+          cache-dependency-path: 'pom.xml' # optional
+
+      - name: Compile code
+        run: |
+          ./mvnw clean compile
+
+  unit-tests:
+    name: Running unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK 21
+        uses: actions/setup-jdk@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+          cache: 'maven'
+          cache-dependency-path: 'pom.xml' # optional
+
+      - name: Unit tests
+        run: |
+          mvn -B clean test --file pom.xml
+
+  build:
+    name: Build the application
+    runs-on: ubuntu-latest
+    needs: [ compile, unit-tests ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK 21
+        uses: actions/setup-jdk@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+          cache: 'maven'
+          cache-dependency-path: 'pom.xml' # optional
+
+      - name: Build the application
+        run: |
+          echo $(date +"%Y-%m-%d %H:%M:%S")
+          echo "BUILD_NUMBER=$(date '+%d.%m.%Y.%H.%M.%S')" >> $GITHUB_OUTPUT
+          mvn clean
+          mvn -B package --file pom.xml
+
+  build-image:
+    name: Build Docker image
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK 21
+        uses: actions/setup-jdk@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+          cache: 'maven'
+          cache-dependency-path: 'pom.xml' # optional
+
+      - name: Build the application
+        run: |
+          mvn -B clean package --file pom.xml
+
+      - name: Extract project version
+        id: extract_version
+        run: >
+          echo "VERSION=$(./mvnw -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)"
+            >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          directory: .
+          dockerfile: Dockerfile
+          platform: linux/amd64
+          tags:
+            - ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.extract_version.outputs.VERSION }}
+          addLatest: true
+          buildArgs:
+            - PROFILE=''
+            - APP_VERSION=${{ steps.extract_version.outputs.VERSION }}
+
+      # TODO replace container image tag in `docker-compose.yml` with the one of built image and commit
+
+  deploy:
+    if: false # Don't run this job for now
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    needs: [ build-image ]
+    steps:
+      - name: Create deployment folder
+        run: ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} "mkdir -p ci-cd"
+
+      - name: Copy docker-compose file
+        run: scp ../docker/docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:ci-cd/docker-compose.yml
+
+      - name: Set ENV variables and deploy
+        run: |
+          ssh ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} <<EOF
+          export SPRING_MAIL_HOST=${{ secrets.SPRING_MAIL_HOST }}
+          export SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }}
+          export SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}
+          export APPLICATION_SECURITY_JWT_SECRETKEY=${{ secrets.APPLICATION_SECURITY_JWT_SECRETKEY }}
+          export APPLICATION_FRONTEND_URL='' # TODO frontend url
+          # TODO keycloak and postgres credentials
+          cd ci-cd
+          docker-compose -f docker-compose.yml pull -q
+          docker-compose -f docker-compose.yml up -d
+          EOF

@@ -3,7 +3,7 @@ name: BSN Frontend Pipeline
 on:
   push:
     branches: [ 'master' ]
-    paths: [ 'book-network-ui/**', 'docker/docker-compose.yml' '.github/workflows/*-frontend.yml' ]
+    paths: [ 'book-network-ui/**', 'docker/docker-compose.yml', '.github/workflows/*-frontend.yml' ]
   workflow_dispatch:
 
 defaults:
@@ -12,7 +12,7 @@ defaults:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/bsn-ui
+  IMAGE_NAME: book-social-network/bsn-ui
 
 jobs:
   build-image:
@@ -25,23 +25,22 @@ jobs:
           fetch-depth: 0
       - name: Extract project version
         id: extract_version
-        run: >
-          echo "VERSION=$(jq --raw-output '.version' package.json)"
-            >> $GITHUB_OUTPUT
+        run: |
+          echo "VERSION=$(jq --raw-output '.version' package.json)" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
           image: ${{ env.IMAGE_NAME }}
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          directory: .
-          dockerfile: Dockerfile
+          directory: ./book-network-ui
+          dockerfile: ./book-network-ui/Dockerfile
           platform: linux/amd64
-          tags:
-            - ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.extract_version.outputs.VERSION }}
+          tags: ${{ steps.extract_version.outputs.VERSION }}
           addLatest: true
+          pushImage: ${{ !env.ACT }} # don't push image when local actions testing
 
       # TODO replace container image tag in `docker-compose.yml` with the one of built image and commit
 

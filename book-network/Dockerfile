@@ -9,6 +9,8 @@ RUN mvn clean package -DskipTests
 # Runtime Stage
 FROM amazoncorretto:21-alpine
 LABEL authors="thivernale"
+LABEL org.opencontainers.image.source="https://github.com/thivernale/book-social-network"
+
 # Arguments to be passed when building the image (with provided defaults)
 ARG PROFILE=dev
 ARG APP_PORT=8088

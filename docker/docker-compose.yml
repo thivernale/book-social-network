@@ -31,7 +31,7 @@ services:
       - '1080:1080'
 
   bsn-api:
-    image: bsn/bsn-api:1.0.0
+    image: ghcr.io/thivernale/book-social-network/bsn-api:1.0.0
     container_name: bsn-api
     ports:
       - 8088:8088
@@ -48,7 +48,7 @@ services:
       - uploads:/app/uploads
 
   bsn-ui:
-    image: bsn/bsn-ui:1.0.0
+    image: ghcr.io/thivernale/book-social-network/bsn-ui:1.0.0
     container_name: bsn-ui
     ports:
       - 8080:80

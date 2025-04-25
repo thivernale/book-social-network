@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForOf, NgIf } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 import { BookService } from '../../../../services/services/book.service';
 import { PageResponseBorrowedBookResponse } from '../../../../services/models/page-response-borrowed-book-response';
@@ -12,14 +13,7 @@ import { RatingComponent } from '../../components/rating/rating.component';
 
 @Component({
   selector: 'app-my-borrowed-books',
-  imports: [
-    PaginationComponent,
-    NgForOf,
-    NgIf,
-    ReactiveFormsModule,
-    FormsModule,
-    RatingComponent,
-  ],
+  imports: [PaginationComponent, NgForOf, NgIf, ReactiveFormsModule, FormsModule, RatingComponent],
   templateUrl: './my-borrowed-books.component.html',
   standalone: true,
 })
@@ -35,6 +29,7 @@ export class MyBorrowedBooksComponent implements OnInit {
   constructor(
     private bookService: BookService,
     private feedbackService: FeedbackService,
+    private toastrService: ToastrService,
   ) {
   }
 
@@ -51,6 +46,7 @@ export class MyBorrowedBooksComponent implements OnInit {
         this.bookResponse = value;
       },
       error: err => {
+        this.toastrService.error(err.message, 'Error');
       },
     });
   }
@@ -71,10 +67,11 @@ export class MyBorrowedBooksComponent implements OnInit {
         } else {
           this.findAllBorrowedBooks();
           this.setSelectedBook(undefined);
+          this.toastrService.success('Book returned successfully and owner has been notified', 'Success');
         }
       },
       error: err => {
-        this.errorMsg = [err.error.error ?? err.message];
+        this.toastrService.error(err.error.error ?? err.message, 'Error');
       },
     });
   }
@@ -86,9 +83,11 @@ export class MyBorrowedBooksComponent implements OnInit {
       next: () => {
         this.findAllBorrowedBooks();
         this.setSelectedBook(undefined);
+        this.toastrService.success('Book returned successfully and owner has been notified', 'Success');
       },
       error: err => {
         this.errorMsg = err.error.validationErrors ?? [err.error.error ?? err.message];
+        this.toastrService.error('Feedback not saved', 'Error');
       },
     });
   }

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgIf } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 
 import { BookResponse } from '../../../../services/models/book-response';
 import { RatingComponent } from '../rating/rating.component';
@@ -9,6 +9,7 @@ import { RatingComponent } from '../rating/rating.component';
   imports: [
     NgIf,
     RatingComponent,
+    NgClass,
   ],
   templateUrl: './book-card.component.html',
   styleUrl: './book-card.component.scss',

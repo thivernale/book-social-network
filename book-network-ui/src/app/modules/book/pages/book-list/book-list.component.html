@@ -1,10 +1,5 @@
 <h3>Book list</h3>
 <hr />
-<div *ngIf="message" [class.alert-danger]="level !== 'success'"
-     [class.alert-success]="level === 'success'" class="alert"
->
-  {{message}}
-</div>
 
 <div class="d-flex justify-content-start gap-2 flex-wrap">
   <app-book-card
@@ -18,4 +13,5 @@
   (pageChange)="page = $event; findAllBooks()"
   [bookResponse]="bookResponse"
   [page]="bookResponse.page ?? 0"
-  [size]="size" />
+  [size]="size"
+/>

@@ -1,5 +1,6 @@
 import { Component, effect, OnInit } from '@angular/core';
 import { NgClass, NgForOf, NgIf } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 
 import { BookService } from '../../../../services/services/book.service';
 import { PageResponseBorrowedBookResponse } from '../../../../services/models/page-response-borrowed-book-response';
@@ -8,12 +9,7 @@ import { BorrowedBookResponse } from '../../../../services/models/borrowed-book-
 
 @Component({
   selector: 'app-my-returned-books',
-  imports: [
-    PaginationComponent,
-    NgForOf,
-    NgIf,
-    NgClass,
-  ],
+  imports: [PaginationComponent, NgForOf, NgIf, NgClass],
   templateUrl: './my-returned-books.component.html',
   standalone: true,
 })
@@ -21,14 +17,13 @@ export class MyReturnedBooksComponent implements OnInit {
 
   someEffect = effect(() => {
   }, {});
-  protected message: string = '';
-  protected level: 'success' | 'error' = 'success';
   protected bookResponse: PageResponseBorrowedBookResponse = {};
   protected page = 0;
   protected size = 5;
 
   constructor(
     private bookService: BookService,
+    private toastrService: ToastrService,
   ) {
   }
 
@@ -45,8 +40,7 @@ export class MyReturnedBooksComponent implements OnInit {
         this.bookResponse = value;
       },
       error: err => {
-        // this.message = err.message;
-        // this.level = 'error';
+        this.toastrService.error(err.message, 'Error');
       },
     });
   }
@@ -59,12 +53,10 @@ export class MyReturnedBooksComponent implements OnInit {
       'book-id': book.id as number,
     }).subscribe({
       next: () => {
-        this.message = 'Book return successfully approved';
-        this.level = 'success';
+        this.toastrService.success('Book return successfully approved', 'Success');
         this.findAllReturnedBooks();
       }, error: err => {
-        this.message = err.error.error;
-        this.level = 'error';
+        this.toastrService.error(err.error.error, 'Error');
       },
     });
   }

@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { BookRequest } from '../../../../services/models/book-request';
 import { BookService } from '../../../../services/services/book.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-manage-book',
@@ -19,7 +20,7 @@ import { BookService } from '../../../../services/services/book.service';
 })
 export class ManageBookComponent implements OnInit {
   protected errorMsg: string[] = [];
-  protected selectedPicture: string = '';
+  protected selectedPicture = '';
   protected bookRequest: BookRequest = { authorName: '', isbn: '', synopsis: '', title: '' };
   private selectedBookCover: any;
 
@@ -27,6 +28,7 @@ export class ManageBookComponent implements OnInit {
     private bookService: BookService,
     private router: Router,
     private route: ActivatedRoute,
+    private toastrService: ToastrService,
   ) {
   }
 
@@ -61,6 +63,7 @@ export class ManageBookComponent implements OnInit {
       next: bookId => {
 
         if (!this.selectedBookCover) {
+          this.toastrService.success('Book successfully saved', 'Success');
           this.navigateToList().then();
           return;
         }
@@ -69,10 +72,14 @@ export class ManageBookComponent implements OnInit {
           'book-id': bookId,
           body: { file: this.selectedBookCover },
         }).subscribe({
-          next: this.navigateToList,
+          next: () => {
+            this.toastrService.success('Book successfully saved', 'Success');
+            this.navigateToList().then();
+          },
         });
       },
       error: err => {
+        this.toastrService.error('Book not saved', 'Error');
         this.errorMsg = err.error.validationErrors ?? [err.error.error];
       },
     });

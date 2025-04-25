@@ -5,18 +5,18 @@
 >
   <img *ngIf="bookCover else noImage" [src]="bookCover" alt="" class="card-img-top" height="200" />
   <div class="card-body overflow-auto">
-    <h5 class="card-title fs-6 fw-bold mb-1 text-nowrap"><i class="fas fa-book"></i>&nbsp;{{book.title}}</h5>
-    <h5 class="card-subtitle fs-6 mb-1 text-secondary"><i class="fas fa-user-check"></i>&nbsp;{{book.authorName}}</h5>
-    <h6 class="card-subtitle fs-6 mb-1 text-secondary"><i class="fas fa-code"></i>&nbsp;{{book.isbn}}</h6>
-    <h6 class="card-subtitle fs-6 mb-1 text-secondary"><i class="fas fa-user"></i>&nbsp;{{book.owner}}</h6>
+    <h5 class="card-title fs-6 fw-bold mb-1 text-nowrap"><i class="fas fa-book"></i>&nbsp;{{ book.title }}</h5>
+    <h5 class="card-subtitle fs-6 mb-1 text-secondary"><i class="fas fa-user-check"></i>&nbsp;{{ book.authorName }}</h5>
+    <h6 class="card-subtitle fs-6 mb-1 text-secondary"><i class="fas fa-code"></i>&nbsp;{{ book.isbn }}</h6>
+    <h6 class="card-subtitle fs-6 mb-1 text-secondary"><i class="fas fa-user"></i>&nbsp;{{ book.owner }}</h6>
     <hr />
-    <p class="card-text">{{book.synopsis}}</p>
+    <p class="card-text">{{ book.synopsis }}</p>
   </div>
   <div class="card-footer d-flex gap-2 justify-content-between align-items-center">
     <div class="d-flex gap-2">
       <app-rating [rating]="book.rate ?? 0" />
       <span *ngIf="book.rate ?? 0 > 0" class="fw-bold">
-        {{book.rate}}
+        {{ book.rate }}
       </span>
     </div>
     <div *ngIf="!manage" class="d-flex gap-2">
@@ -26,8 +26,14 @@
     </div>
     <div *ngIf="manage" class="d-flex gap-2">
       <i (click)="onEdit()" class="fas text-success fa-edit"></i>
-      <i (click)="onShare()" class="fas text-primary fa-share"></i>
-      <i (click)="onArchive()" class="fas text-danger fa-archive"></i>
+      <i
+        (click)="onShare()" [ngClass]="{ 'fa-eye-slash': book.shareable, 'fa-share': !book.shareable }"
+        class="fas text-primary"
+      ></i>
+      <i
+        (click)="onArchive()" [ngClass]="{ 'fa-box-open': book.archived, 'fa-archive': !book.archived }"
+        class="fas text-danger"
+      ></i>
     </div>
   </div>
 </div>

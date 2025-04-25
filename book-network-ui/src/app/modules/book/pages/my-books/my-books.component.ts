@@ -7,6 +7,7 @@ import { PageResponseBookResponse } from '../../../../services/models/page-respo
 import { BookResponse } from '../../../../services/models/book-response';
 import { BookCardComponent } from '../../components/book-card/book-card.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-my-books',
@@ -23,6 +24,7 @@ export class MyBooksComponent implements OnInit {
     private bookService: BookService,
     private router: Router,
     private route: ActivatedRoute,
+    private toastrService: ToastrService,
   ) {
   }
 
@@ -38,6 +40,7 @@ export class MyBooksComponent implements OnInit {
     this.bookService.updateArchivedStatus({ 'book-id': book.id as number }).subscribe({
       next: () => {
         book.archived = !book.archived;
+        this.toastrService.success(`Book ${book.archived ? 'archived' : 'unarchived'}`, 'Success');
       },
     });
   }
@@ -46,6 +49,7 @@ export class MyBooksComponent implements OnInit {
     this.bookService.updateShareableStatus({ 'book-id': book.id as number }).subscribe({
       next: () => {
         book.shareable = !book.shareable;
+        this.toastrService.success(`Book set to ${book.shareable ? '' : 'not '}shareable`, 'Success');
       },
     });
   }
@@ -59,7 +63,7 @@ export class MyBooksComponent implements OnInit {
         this.bookResponse = value;
       },
       error: err => {
-        console.log(err.message);
+        this.toastrService.error(err.message, 'Error');
       },
     });
   }

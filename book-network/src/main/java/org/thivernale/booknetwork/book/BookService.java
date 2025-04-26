@@ -13,10 +13,14 @@ import org.thivernale.booknetwork.exception.OperationNotPermittedException;
 import org.thivernale.booknetwork.file.FileStorageService;
 import org.thivernale.booknetwork.history.BookTransactionHistory;
 import org.thivernale.booknetwork.history.BookTransactionHistoryRepository;
+import org.thivernale.booknetwork.notification.Notification;
+import org.thivernale.booknetwork.notification.NotificationService;
 import org.thivernale.booknetwork.user.User;
 
 import java.util.Objects;
 import java.util.function.Function;
+
+import static org.thivernale.booknetwork.notification.NotificationStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class BookService {
     private final BookRepository repository;
     private final BookTransactionHistoryRepository historyRepository;
     private final FileStorageService fileStorageService;
+    private final NotificationService notificationService;
 
     public Long save(BookRequest request, Authentication authentication) {
         Book book = bookMapper.toBook(request);
@@ -115,7 +120,16 @@ public class BookService {
             .returned(false)
             .returnApproved(false)
             .build();
-        return historyRepository.save(history)
+
+        BookTransactionHistory saved = historyRepository.save(history);
+
+        notificationService.sendNotification(
+            book.getOwner()
+                .getId()
+                .toString(),
+            new Notification(BORROWED, "Book has been borrowed", book.getTitle()));
+
+        return saved
             .getId();
     }
 
@@ -133,7 +147,15 @@ public class BookService {
             historyRepository.findByBookIdAndUserId(bookId, user.getId())
                 .orElseThrow(() -> new OperationNotPermittedException("Book was not borrowed by user"));
         history.setReturned(true);
-        return historyRepository.save(history)
+        BookTransactionHistory saved = historyRepository.save(history);
+
+        notificationService.sendNotification(
+            book.getOwner()
+                .getId()
+                .toString(),
+            new Notification(RETURNED, "Book has been returned", book.getTitle()));
+
+        return saved
             .getId();
     }
 
@@ -151,7 +173,15 @@ public class BookService {
             historyRepository.findByBookIdAndOwnerId(bookId, user.getId())
                 .orElseThrow(() -> new OperationNotPermittedException("Book is not pending return approval"));
         history.setReturnApproved(true);
-        return historyRepository.save(history)
+        BookTransactionHistory saved = historyRepository.save(history);
+
+        notificationService.sendNotification(
+            saved.getUser()
+                .getId()
+                .toString(),
+            new Notification(RETURN_APPROVED, "Book return has been approved", book.getTitle()));
+
+        return saved
             .getId();
     }
 

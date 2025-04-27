@@ -9,7 +9,7 @@ class EmailTemplateNameTest {
     @Test
     public void testEnum() {
         EmailTemplateName activateAccount = EmailTemplateName.ACTIVATE_ACCOUNT;
-        assertEquals(activateAccount.name(), "ACTIVATE_ACCOUNT");
-        assertEquals(activateAccount.getName(), "activate_account");
+        assertEquals("ACTIVATE_ACCOUNT", activateAccount.name());
+        assertEquals("activate_account", activateAccount.getName());
     }
 }

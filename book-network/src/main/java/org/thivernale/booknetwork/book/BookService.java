@@ -41,7 +41,12 @@ public class BookService {
             .getId();
     }
 
-    @Caching(cacheable = @Cacheable(value = "book_response"))
+    @Caching(
+        cacheable = {
+            @Cacheable(cacheNames = "book_response", cacheManager = "caffeineCacheManager"),
+            @Cacheable(cacheNames = "book_response", cacheManager = "redisCacheManager")
+        }
+    )
     public BookResponse findById(Long bookId) {
         return bookMapper.toBookResponse(getBook(bookId));
     }
@@ -172,7 +177,12 @@ public class BookService {
         repository.save(book);
     }
 
-    @Caching(cacheable = @Cacheable(value = "book", key = "#a0"))
+    @Caching(
+        cacheable = {
+            //@Cacheable(cacheNames = "book", key = "#a0", cacheManager = "caffeineCacheManager"),
+            @Cacheable(cacheNames = "book", key = "#a0", cacheManager = "redisCacheManager")
+        }
+    )
     public Book getBook(Long bookId) {
         return repository.findById(bookId)
             .orElseThrow(() -> new EntityNotFoundException("Book not found"));

@@ -2,12 +2,16 @@ package org.thivernale.booknetwork.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -21,6 +25,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Configuration
 @EnableCaching
@@ -53,10 +58,7 @@ public class CacheConfig {
 
     //@Bean
     public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper =
-            new Jackson2ObjectMapperBuilder().build(); //new ObjectMapper()
-
-        return objectMapper
+        return new Jackson2ObjectMapperBuilder().build()
 //            .activateDefaultTyping(BasicPolymorphicTypeValidator.builder()
 //                .build(), ObjectMapper.DefaultTyping.EVERYTHING, JsonTypeInfo.As.WRAPPER_OBJECT)
             //.enable(JsonParser.Feature.INCLUDE_SOURCE_IN_LOCATION)
@@ -74,10 +76,27 @@ public class CacheConfig {
     }
 
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+    public CacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
         return RedisCacheManager.builder(connectionFactory)
             .cacheDefaults(cacheConfiguration())
             .build();
+    }
+
+    @Bean
+    public CaffeineCache caffeineCacheConfig() {
+        return new CaffeineCache("book_response", Caffeine.newBuilder()
+            .expireAfterWrite(Duration.of(30, ChronoUnit.SECONDS))
+            .initialCapacity(1)
+            .maximumSize(100)
+            .build());
+    }
+
+    @Bean
+    @Primary
+    public CacheManager caffeineCacheManager(CaffeineCache caffeineCache) {
+        SimpleCacheManager cacheManager = new SimpleCacheManager();
+        cacheManager.setCaches(List.of(caffeineCache));
+        return cacheManager;
     }
 
     @ConfigurationProperties(prefix = "spring.data.redis")

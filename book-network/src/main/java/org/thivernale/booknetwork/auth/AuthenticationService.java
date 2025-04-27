@@ -114,7 +114,7 @@ class AuthenticationService {
                 )
             );
         User user = (User) authentication.getPrincipal();
-        Map<String, Object> claims = Map.of("fullName", user.getFullName());
+        Map<String, Object> claims = Map.of("fullName", user.getFullName(), "id", user.getId());
 
         return AuthenticationResponse.builder()
             .token(jwtService.generateToken(claims, user))
@@ -126,7 +126,8 @@ class AuthenticationService {
         Token savedToken = tokenRepository.findByToken(token)
             .orElseThrow(() -> new NoSuchElementException("Invalid token"));
 
-        if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
+        if (LocalDateTime.now()
+            .isAfter(savedToken.getExpiresAt())) {
             sendActivationEmail(savedToken.getUser());
             throw new CredentialsExpiredException(
                 "Activation token has expired. A new token has been sent to the user."

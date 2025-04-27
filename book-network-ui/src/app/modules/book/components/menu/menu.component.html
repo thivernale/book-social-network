@@ -1,9 +1,11 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
     <a class="navbar-brand" href="javascript:void(0)">BSN</a>
-    <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
-            class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse"
-            type="button">
+    <button
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+      class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse"
+      type="button"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -35,10 +37,26 @@
         </li>
       </ul>
       <form class="d-flex gap-2 align-items-center" role="search">
+        <button (click)="notifications = []" class="btn dropdown cursor-pointer" type="button">
+          <i aria-expanded="false" class="fas fa-bell position-relative h4" data-bs-toggle="dropdown">
+            <span
+              class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle"
+            >
+              <span class="visually-hidden"></span>
+            </span>
+          </i>
+          <ul class="dropdown-menu">
+            <li *ngFor="let notification of notifications">
+              <span class="dropdown-item cursor-pointer border-bottom">
+                <i class="fas fa-bell"></i>&nbsp;{{ notification.title }}: {{ notification.content }}
+              </span>
+            </li>
+          </ul>
+        </button>
         <input aria-label="Search" class="form-control" name="search" placeholder="Find a book" type="text" />
-        <button class="btn btn-outline-success" type="submit"><i class="fas fa-search"></i></button>
+        <button class="btn btn-outline-success" type="button"><i class="fas fa-search"></i></button>
         <span>Welcome</span>
-        <span class="text-capitalize fw-bold text-nowrap">{{username}}</span>
+        <span class="text-capitalize fw-bold text-nowrap">{{ username }}</span>
         <button (click)="logout()" class="btn btn-link" type="button"><i class="fas fa-door-open"></i></button>
       </form>
     </div>

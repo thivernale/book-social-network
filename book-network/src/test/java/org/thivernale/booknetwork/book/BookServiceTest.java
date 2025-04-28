@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.thivernale.booknetwork.exception.OperationNotPermittedException;
 import org.thivernale.booknetwork.history.BookTransactionHistory;
 import org.thivernale.booknetwork.history.BookTransactionHistoryRepository;
+import org.thivernale.booknetwork.notification.NotificationService;
 import org.thivernale.booknetwork.user.User;
 
 import java.util.Collections;
@@ -37,6 +38,8 @@ class BookServiceTest {
     private BookTransactionHistoryRepository historyRepository;
     @Mock
     private BookMapper bookMapper;
+    @Mock
+    private NotificationService notificationService;
 
     public BookServiceTest() {
         authentication = new UsernamePasswordAuthenticationToken(currentUser, Collections.EMPTY_LIST);

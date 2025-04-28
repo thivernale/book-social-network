@@ -13,7 +13,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,6 +23,8 @@ import org.thivernale.booknetwork.user.User;
 import redis.embedded.RedisServer;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,18 +64,7 @@ class BookServiceCacheTest {
     @Test
     public void givenBookIsPresent_whenFindByIdIsCalled_thenReturnBookResponseAndCacheIt() {
         final Long bookId = 100L;
-        Book book = Book.builder()
-            .title("Title")
-            .authorName("Author")
-            .isbn("Isbn")
-            .synopsis("Synopsis")
-            .owner(User.builder()
-                .id(1L)
-                .firstname("Test")
-                .lastname("User")
-                .build())
-            .id(bookId)
-            .build();
+        Book book = getBook(bookId);
         given(bookRepository.findById(bookId))
             .willReturn(Optional.of(book));
         BookResponse bookResponse = bookMapper.toBookResponse(book);
@@ -91,6 +81,46 @@ class BookServiceCacheTest {
         assertThat(redisCacheManager.getCache("book_response")
             .get(bookId)
             .get()).isEqualTo(bookResponse);
+    }
+
+    @Test
+    public void givenBookIsPresent_whenFindByIdIsCalledTwiceAndFirstCacheExpired_thenReturnBookResponseAndCacheIt() throws InterruptedException {
+        final Long bookId = 100L;
+        Book book = getBook(bookId);
+        given(bookRepository.findById(bookId))
+            .willReturn(Optional.of(book));
+        BookResponse bookResponse = bookMapper.toBookResponse(book);
+
+        BookResponse bookResponseCacheMiss = bookService.findById(bookId);
+        Thread.sleep(Duration.of(3, ChronoUnit.SECONDS));
+        BookResponse bookResponseCacheHit = bookService.findById(bookId);
+
+        verify(bookRepository, times(1)).findById(bookId);
+        assertThat(bookResponseCacheMiss)
+            .isEqualTo(bookResponse);
+        assertThat(bookResponseCacheHit)
+            .isEqualTo(bookResponse);
+        assertThat(caffeineCacheManager.getCache("book_response")
+            .get(bookId)
+            .get()).isEqualTo(bookResponse);
+        assertThat(redisCacheManager.getCache("book_response")
+            .get(bookId)
+            .get()).isEqualTo(bookResponse);
+    }
+
+    private Book getBook(Long bookId) {
+        return Book.builder()
+            .title("Title")
+            .authorName("Author")
+            .isbn("Isbn")
+            .synopsis("Synopsis")
+            .owner(User.builder()
+                .id(1L)
+                .firstname("Test")
+                .lastname("User")
+                .build())
+            .id(bookId)
+            .build();
     }
 
     @TestConfiguration

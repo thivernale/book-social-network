@@ -3,11 +3,15 @@ package org.thivernale.booknetwork.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.AnnotationCacheOperationSource;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.interceptor.CacheInterceptor;
+import org.springframework.cache.interceptor.CacheOperationSource;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,6 +87,16 @@ public class CacheConfig {
     }
 
     @Bean
+    public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
+        return builder -> builder
+            .withCacheConfiguration("book_response", RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofMinutes(5))
+                .disableCachingNullValues())
+            // next caches...
+            .build();
+    }
+
+    @Bean
     public CaffeineCache caffeineCacheConfig() {
         return new CaffeineCache("book_response", Caffeine.newBuilder()
             .expireAfterWrite(Duration.of(30, ChronoUnit.SECONDS))
@@ -96,7 +110,23 @@ public class CacheConfig {
     public CacheManager caffeineCacheManager(CaffeineCache caffeineCache) {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         cacheManager.setCaches(List.of(caffeineCache));
+        cacheManager.initializeCaches();
         return cacheManager;
+    }
+
+    @Bean
+    public CacheInterceptor cacheInterceptor(
+        CacheManager caffeineCacheManager,
+        CacheOperationSource cacheOperationSource
+    ) {
+        CacheInterceptor interceptor = new CustomCacheInterceptor(caffeineCacheManager);
+        interceptor.setCacheOperationSources(cacheOperationSource);
+        return interceptor;
+    }
+
+    @Bean
+    public CacheOperationSource cacheOperationSource() {
+        return new AnnotationCacheOperationSource();
     }
 
     @ConfigurationProperties(prefix = "spring.data.redis")

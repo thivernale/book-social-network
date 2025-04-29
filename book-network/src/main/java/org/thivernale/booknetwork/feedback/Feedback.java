@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.envers.Audited;
 import org.thivernale.booknetwork.book.Book;
 import org.thivernale.booknetwork.common.BaseEntity;
 
@@ -19,6 +20,7 @@ import org.thivernale.booknetwork.common.BaseEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Audited
 @Table(name = "feedback")
 public class Feedback extends BaseEntity {
     private double score;

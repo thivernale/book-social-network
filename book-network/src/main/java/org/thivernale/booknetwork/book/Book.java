@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.thivernale.booknetwork.common.BaseEntity;
 import org.thivernale.booknetwork.feedback.Feedback;
 import org.thivernale.booknetwork.history.BookTransactionHistory;
@@ -19,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Audited
 @Table(name = "book")
 public class Book extends BaseEntity {
     private String title;
@@ -29,6 +32,7 @@ public class Book extends BaseEntity {
     private boolean archived;
     private boolean shareable;
 
+    @NotAudited
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;

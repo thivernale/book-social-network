@@ -1,12 +1,17 @@
 package org.thivernale.booknetwork.book;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thivernale.booknetwork.common.PageResponse;
 import org.thivernale.booknetwork.exception.OperationNotPermittedException;
@@ -17,7 +22,10 @@ import org.thivernale.booknetwork.notification.Notification;
 import org.thivernale.booknetwork.notification.NotificationService;
 import org.thivernale.booknetwork.user.User;
 
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
 import static org.thivernale.booknetwork.notification.NotificationStatus.*;
@@ -30,6 +38,7 @@ public class BookService {
     private final BookTransactionHistoryRepository historyRepository;
     private final FileStorageService fileStorageService;
     private final NotificationService notificationService;
+    private final EntityManager entityManager;
 
     public Long save(BookRequest request, Authentication authentication) {
         Book book = bookMapper.toBook(request);
@@ -38,6 +47,7 @@ public class BookService {
         if (book.getId() != null) {
             Book originalBook = getBook(book.getId());
             book.setBookCover(originalBook.getBookCover());
+            book.setVersion(originalBook.getVersion());
         }
 
         return repository.save(book)
@@ -46,6 +56,17 @@ public class BookService {
 
     public BookResponse findById(Long bookId) {
         return bookMapper.toBookResponse(getBook(bookId));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Map<Number, Book> getAudit(Long bookId) {
+        AuditReader auditReader = AuditReaderFactory.get(entityManager);
+        Set<Number> revisions = new HashSet<>(auditReader.getRevisions(Book.class, bookId));
+        return auditReader.findRevisions(Book.class, revisions);
+
+        /*AuditQuery auditQuery = auditReader.createQuery()
+            .forRevisionsOfEntity(Book.class, true, true);
+        return auditQuery.getResultList();*/
     }
 
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication authentication) {

@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.thivernale.booknetwork.book.Book;
 import org.thivernale.booknetwork.common.BaseEntity;
 import org.thivernale.booknetwork.user.User;
@@ -20,8 +22,10 @@ import org.thivernale.booknetwork.user.User;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Audited
 @Table(name = "book_transaction_history")
 public class BookTransactionHistory extends BaseEntity {
+    @NotAudited
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

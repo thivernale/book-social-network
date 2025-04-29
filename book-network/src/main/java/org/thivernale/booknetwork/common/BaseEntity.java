@@ -23,11 +23,12 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity implements Serializable {
+    @Version
+    Long version;
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue
     private Long id;
-
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

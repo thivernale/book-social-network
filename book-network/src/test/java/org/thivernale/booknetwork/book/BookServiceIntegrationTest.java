@@ -14,7 +14,7 @@ import org.thivernale.booknetwork.user.User;
 import org.thivernale.booknetwork.user.UserRepository;
 
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -48,7 +48,7 @@ public class BookServiceIntegrationTest {
         BookRequest request = new BookRequest(null, "Title", "Author Name", "ISBN", "Synopsis", true);
         Long savedId = underTest.save(request, authentication);
 
-        Map<Number, Book> audit = underTest.getAudit(savedId);
+        List<Book> audit = underTest.getAudit(savedId);
         Assertions.assertEquals(1, audit.size());
     }
 }

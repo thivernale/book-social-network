@@ -2,9 +2,13 @@ package org.thivernale.booknetwork.book;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceContextType;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,10 +26,8 @@ import org.thivernale.booknetwork.notification.Notification;
 import org.thivernale.booknetwork.notification.NotificationService;
 import org.thivernale.booknetwork.user.User;
 
-import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 
 import static org.thivernale.booknetwork.notification.NotificationStatus.*;
@@ -38,6 +40,7 @@ public class BookService {
     private final BookTransactionHistoryRepository historyRepository;
     private final FileStorageService fileStorageService;
     private final NotificationService notificationService;
+    @PersistenceContext(type = PersistenceContextType.EXTENDED)
     private final EntityManager entityManager;
 
     public Long save(BookRequest request, Authentication authentication) {
@@ -58,15 +61,26 @@ public class BookService {
         return bookMapper.toBookResponse(getBook(bookId));
     }
 
+    @SuppressWarnings("unchecked")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Map<Number, Book> getAudit(Long bookId) {
+    public List<Book> getAudit(Long bookId) {
         AuditReader auditReader = AuditReaderFactory.get(entityManager);
-        Set<Number> revisions = new HashSet<>(auditReader.getRevisions(Book.class, bookId));
-        return auditReader.findRevisions(Book.class, revisions);
+//        Set<Number> revisions = new HashSet<>(auditReader.getRevisions(Book.class, bookId));
+//        return auditReader.findRevisions(Book.class, revisions);
 
-        /*AuditQuery auditQuery = auditReader.createQuery()
-            .forRevisionsOfEntity(Book.class, true, true);
-        return auditQuery.getResultList();*/
+        AuditQuery auditQuery = auditReader.createQuery()
+            .forRevisionsOfEntity(Book.class, true, true)
+            .add(AuditEntity.id()
+                .eq(bookId))
+            //.add(AuditEntity.revisionNumber().maximize().computeAggregationInInstanceContext())
+            .addOrder(AuditEntity.revisionNumber()
+                .asc());
+
+        return auditQuery.getResultList()
+            .stream()
+            .map(o -> (o instanceof Book b ? b : null))
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication authentication) {

@@ -33,14 +33,14 @@ public class Book extends BaseEntity {
     private boolean shareable;
 
     @NotAudited
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id")
     private User owner;
 
     @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
     private List<Feedback> feedbacks;
 
-    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     private List<BookTransactionHistory> histories;
 
     @Transient

@@ -111,6 +111,7 @@ public class BookController {
         Authentication authentication
     ) {
         service.uploadBookCover(bookId, file, authentication);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.accepted()
+            .build();
     }
 }

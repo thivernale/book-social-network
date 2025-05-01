@@ -41,6 +41,7 @@ public class User implements UserDetails, Principal {
     private boolean enabled;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "_user_roles")
     @JsonIgnore
     private List<Role> roles;
 

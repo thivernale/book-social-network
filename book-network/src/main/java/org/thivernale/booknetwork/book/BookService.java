@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thivernale.booknetwork.common.PageResponse;
@@ -43,6 +42,7 @@ public class BookService {
     @PersistenceContext(type = PersistenceContextType.EXTENDED)
     private final EntityManager entityManager;
 
+    @Transactional
     public Long save(BookRequest request, Authentication authentication) {
         Book book = bookMapper.toBook(request);
         book.setOwner(getCurrentUser(authentication));
@@ -57,12 +57,13 @@ public class BookService {
             .getId();
     }
 
+    @Transactional
     public BookResponse findById(Long bookId) {
         return bookMapper.toBookResponse(getBook(bookId));
     }
 
     @SuppressWarnings("unchecked")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public List<Book> getAudit(Long bookId) {
         AuditReader auditReader = AuditReaderFactory.get(entityManager);
 //        Set<Number> revisions = new HashSet<>(auditReader.getRevisions(Book.class, bookId));

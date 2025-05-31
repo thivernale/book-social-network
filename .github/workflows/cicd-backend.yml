@@ -1,5 +1,8 @@
 name: BSN Backend Pipeline
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ 'master' ]
@@ -88,6 +91,9 @@ jobs:
   build-image:
     name: Build Docker image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs: [ build ]
     steps:
       - name: Checkout code
@@ -133,6 +139,8 @@ jobs:
   deploy:
     if: false # Don't run this job for now
     name: Deploy Backend
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     needs: [ build-image ]
     steps:

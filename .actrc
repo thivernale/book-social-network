@@ -1,0 +1,5 @@
+# Usage Guide https://nektosact.com/usage/index.html
+
+--action-offline-mode
+# GHCR PAT https://github.com/settings/tokens
+-s GITHUB_TOKEN=

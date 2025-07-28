@@ -15,6 +15,7 @@ LABEL authors="thivernale"
 LABEL org.opencontainers.image.source="https://github.com/thivernale/book-social-network"
 
 COPY nginx.conf /etc/nginx/nginx.conf
+COPY certs /etc/nginx/certs
 COPY --from=build /app/dist/book-network-ui/browser /usr/share/nginx/html
 
 EXPOSE 80

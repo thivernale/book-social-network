@@ -31,7 +31,7 @@ services:
       - '1080:1080'
 
   keycloak:
-    image: quay.io/keycloak/keycloak
+    image: quay.io/keycloak/keycloak:26.2
     container_name: keycloak-bsn
     restart: unless-stopped
     environment:
@@ -39,7 +39,7 @@ services:
       KC_HTTP_ENABLED: true
       KC_HEALTH_ENABLED: true
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres/keycloak
+      KC_DB_URL: jdbc:postgresql://postgres-bsn/keycloak
     #      KC_BOOTSTRAP_ADMIN_USERNAME: ''
     #      KC_BOOTSTRAP_ADMIN_PASSWORD: ''
     #      KC_DB_USERNAME: ''
@@ -51,7 +51,9 @@ services:
       - bsn
     ports:
       - '9090:8080'
-    command: 'start-dev'
+    command: [ "start-dev", "--import-realm" ]
+    volumes:
+      - ./keycloak/:/opt/keycloak/data/import/
     depends_on:
       - postgres
 

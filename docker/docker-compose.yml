@@ -31,7 +31,7 @@ services:
       - '1080:1080'
 
   keycloak:
-    image: quay.io/keycloak/keycloak
+    image: quay.io/keycloak/keycloak:26.2
     container_name: keycloak-bsn
     restart: unless-stopped
     environment:
@@ -51,7 +51,9 @@ services:
       - bsn
     ports:
       - '9090:8080'
-    command: 'start-dev'
+    command: [ "start-dev", "--import-realm" ]
+    volumes:
+      - ./keycloak/:/opt/keycloak/data/import/
     depends_on:
       - postgres
 

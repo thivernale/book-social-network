@@ -5,7 +5,7 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -23,3 +23,7 @@ management:
     web:
       exposure:
         include: '*'
+app:
+  jwt:
+    expires-in: 604800
+    secret: oGAWUfpUk0tgce00+m/gnwejNxeT46HoNRiQMQt1xy08oyOU2bJwg6XtDawRkVpYAoC41X0KUGKgfIqQojHQtg==

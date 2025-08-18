@@ -23,6 +23,7 @@ import java.util.List;
 @Tag(name = "Info")
 public class InfoController {
     private final JdbcTemplate jdbcTemplate;
+    private final InfoService infoService;
 
     @GetMapping("/tables")
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
@@ -44,5 +45,20 @@ public class InfoController {
             "SELECT table_name FROM INFORMATION_SCHEMA.TABLES " +
                 "WHERE NOT TABLE_SCHEMA IN ('INFORMATION_SCHEMA', 'SYSTEM_LOBS')", String.class);
         return ResponseEntity.ok(tables);
+    }
+
+    @GetMapping("/process")
+    public ResponseEntity<Void> processInfo() {
+        try {
+            infoService.step1();
+            infoService.step2();
+            infoService.step3();
+            infoService.step4();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        return ResponseEntity.noContent()
+            .build();
     }
 }

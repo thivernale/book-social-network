@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+
 @Service
 public class InfoService {
     private static final Log log = LogFactory.getLog(InfoService.class);
@@ -22,11 +24,20 @@ public class InfoService {
     }
 
     @Async("asyncTaskExecutor")
-    public void step3() throws InterruptedException {
+    public CompletableFuture<String> step3() throws InterruptedException {
         log.info("step3 " + Thread.currentThread()
             .getName());
         Thread.sleep(1000L);
-        log.info("step3 finished");
+        return new CompletableFuture<String>().completeAsync(() -> {
+            long randomSleep = (long) (Math.random() * 1000);
+            try {
+                Thread.sleep(randomSleep);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            log.info("step3 finished");
+            return "after %d ms".formatted(randomSleep);
+        });
     }
 
     @Async("asyncTaskExecutor")

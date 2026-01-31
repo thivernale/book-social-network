@@ -29,9 +29,10 @@ public class InfoService {
     public CompletableFuture<String> step3() throws InterruptedException {
         log.info("step3 " + Thread.currentThread()
             .getName());
-        Thread.sleep(1000L);
-        return new CompletableFuture<String>().completeAsync(() -> {
-            long randomSleep = random.nextLong() * 1000;
+        Thread.sleep(100L);
+        return CompletableFuture.supplyAsync(() -> {
+            double nextDouble = random.nextDouble() * 1000;
+            long randomSleep = (long) nextDouble;
             try {
                 Thread.sleep(randomSleep);
             } catch (InterruptedException e) {

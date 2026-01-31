@@ -28,7 +28,8 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
             .cors(withDefaults())
-            .csrf(withDefaults())
+            // disable CSRF since we are not using Cookies for session tracking
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(req -> req.requestMatchers(
                     "/auth/**",
                     "/v2/api-docs",

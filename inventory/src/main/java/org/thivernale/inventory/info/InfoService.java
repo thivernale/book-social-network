@@ -50,4 +50,22 @@ public class InfoService {
         Thread.sleep(2000L);
         log.info("step4 finished");
     }
+
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<Long> step5() throws InterruptedException {
+        log.info("step5 " + Thread.currentThread()
+            .getName());
+        Thread.sleep(100L);
+        log.info("step5 finished");
+        return CompletableFuture.supplyAsync(System::currentTimeMillis);
+    }
+
+    @Async("asyncTaskExecutor")
+    public CompletableFuture<Double> step6() throws InterruptedException {
+        log.info("step6 " + Thread.currentThread()
+            .getName());
+        Thread.sleep(1000L);
+        log.info("step6 finished");
+        return CompletableFuture.supplyAsync(random::nextGaussian);
+    }
 }

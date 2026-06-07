@@ -1,0 +1,43 @@
+### Auth
+POST http://localhost:8081/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password"
+}
+
+> {%
+    client.global.set("auth_token", response.body.access_token);
+%}
+
+### Db schema access without authorization
+GET http://localhost:8081/api/auth/tables
+
+### Db schema with authorization and method security
+GET http://localhost:8081/api/info/tables
+Authorization: Bearer {{auth_token}}
+
+### User data with method securty
+GET http://localhost:8081/api/info/user-data-role/user@example.com
+Authorization: Bearer {{auth_token}}
+
+### User data
+GET http://localhost:8081/api/info/user-data-any/user@example.com
+Authorization: Bearer {{auth_token}}
+
+### Async multi-step processing
+GET http://localhost:8081/api/info/process
+Authorization: Bearer {{auth_token}}
+
+### Async multi-step processing
+GET http://localhost:8081/api/info/process56
+Authorization: Bearer {{auth_token}}
+
+### Event firing and handling
+GET http://localhost:8081/api/event?message=message
+Authorization: Bearer {{auth_token}}
+
+### Event publish firing and handling
+GET http://localhost:8081/api/event/publish?message=message
+Authorization: Bearer {{auth_token}}

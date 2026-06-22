@@ -32,6 +32,8 @@ services:
 
   bsn-api:
     image: ghcr.io/thivernale/book-social-network/bsn-api:1.0.0
+    build:
+      context: ../book-network-api
     container_name: bsn-api
     ports:
       - '8088:8088'
@@ -50,6 +52,8 @@ services:
 
   bsn-ui:
     image: ghcr.io/thivernale/book-social-network/bsn-ui:1.0.0
+    build:
+      context: ../book-network-ui
     container_name: bsn-ui
     ports:
       - '8080:80'
@@ -69,5 +73,7 @@ volumes:
   uploads:
     driver: local
 
-# Run locally
-# docker-compose -f ./docker-compose.yml up -d
+# Run local application stack
+# docker compose -f ./docker-compose.yml up -d
+# Build and tag the image
+# docker compose -f docker/docker-compose.yml up bsn-ui --build

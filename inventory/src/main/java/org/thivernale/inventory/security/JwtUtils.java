@@ -28,6 +28,10 @@ public class JwtUtils {
         UserDetails principal = (UserDetails) authentication.getPrincipal();
 
         return Jwts.builder()
+            .header()
+            .keyId(applicationProperties.getJwt()
+                .getKeyId())
+            .and()
             .subject(principal.getUsername())
             .expiration(Date.from(Instant.now()
                 .plusSeconds(applicationProperties.getJwt()

@@ -75,6 +75,15 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
+            /*.keyLocator(keyLocator -> {
+                if (keyLocator instanceof JwsHeader jwsHeader) {
+                    String keyId = jwsHeader.getKeyId();
+                    // use the keyId to retrieve the key from the map
+                    // imagine we have a map of keys, where the keyId is the key
+                    return getSecretKey();
+                }
+                throw new JwtException("Unknown or untrusted Key ID (kid)");
+            })*/
             .verifyWith(getSecretKey())
             .build()
             .parseSignedClaims(token)

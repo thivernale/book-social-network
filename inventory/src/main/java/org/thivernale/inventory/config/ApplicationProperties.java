@@ -14,5 +14,11 @@ public class ApplicationProperties {
 
         private Long expiresIn = DEFAULT_JWT_TOKEN_EXPIRES;
         private String secret;
+        /**
+         * The keyId header parameter is a hint indicating which key was used to secure a JWS or JWE.
+         * This parameter allows originators to explicitly signal a change of key to recipients.
+         * The structure of the keyId value is unspecified. Its value MUST be a case-sensitive string.
+         */
+        private String keyId;
     }
 }

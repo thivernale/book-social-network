@@ -77,13 +77,14 @@ spring:
     properties:
       mail:
         smtp:
-          trust: "*"
-        auth: true
-        starttls:
-          enable: true
-        connection-timeout: 5000
-        timeout: 3000
-        write-timeout: 5000
+          auth: false
+          ssl:
+            enable: false
+          starttls:
+            enable: false
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
 
 application:
   security:

@@ -2,7 +2,7 @@ name: book-social-network
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:18
     container_name: postgres-bsn
     restart: unless-stopped
     environment:
@@ -21,7 +21,7 @@ services:
       - '5432:5432'
 
   mail-dev:
-    image: maildev/maildev
+    image: maildev/maildev:3.0.0
     container_name: mail-dev-bsn
     profiles: [ 'local' ]
     networks:

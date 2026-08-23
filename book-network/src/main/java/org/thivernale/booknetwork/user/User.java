@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.thivernale.booknetwork.book.Book;
+import org.thivernale.booknetwork.chat.Channel;
 import org.thivernale.booknetwork.history.BookTransactionHistory;
 import org.thivernale.booknetwork.role.Role;
 
@@ -28,6 +29,7 @@ import java.util.List;
 @Table(name = "_user")
 @EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails, Principal {
+    static final int LAST_ONLINE_INTERVAL_MINUTES = 10;
     @Id
     @GeneratedValue
     private Long id;
@@ -59,6 +61,18 @@ public class User implements UserDetails, Principal {
     @LastModifiedDate
     @Column(insertable = false)
     private LocalDateTime lastModifiedAt;
+
+    private LocalDateTime lastOnline;
+    @OneToMany(mappedBy = "sender")
+    private List<Channel> channelsAsSender;
+    @OneToMany(mappedBy = "recipient")
+    private List<Channel> channelsAsRecipient;
+
+    @Transient
+    public boolean isOnline() {
+        return lastOnline != null && lastOnline.isAfter(LocalDateTime.now()
+            .minusMinutes(LAST_ONLINE_INTERVAL_MINUTES));
+    }
 
     @Override
     public String getName() {

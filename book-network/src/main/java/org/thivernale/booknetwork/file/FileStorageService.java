@@ -52,7 +52,7 @@ public class FileStorageService {
         return "";
     }
 
-    private String getFileExtension(String filename) {
+    public String getFileExtension(String filename) {
         if (filename == null || filename.isEmpty()) {
             return "";
         }

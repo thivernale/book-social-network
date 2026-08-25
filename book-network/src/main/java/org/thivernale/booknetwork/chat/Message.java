@@ -17,6 +17,8 @@ import org.thivernale.booknetwork.common.BaseEntity;
 @Entity
 @Audited
 @Table(name = "message")
+@NamedQuery(name = MessageConstants.RETRIEVE_MESSAGES_BY_CHANNEL, query = "SELECT m FROM Message m WHERE m.channel.id = :channelId ORDER BY m.createdAt")
+@NamedQuery(name = MessageConstants.UPDATE_MESSAGES_STATUS_BY_CHANNEL_AND_RECIPIENT, query = "UPDATE Message m SET m.status = :status WHERE m.channel.id = :channelId")
 public class Message extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "channel_id")
@@ -36,4 +38,7 @@ public class Message extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private MessageType messageType;
+
+    @Column(name = "media_file_path")
+    private String mediaFilePath;
 }

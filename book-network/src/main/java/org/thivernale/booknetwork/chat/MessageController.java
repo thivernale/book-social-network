@@ -1,5 +1,7 @@
 package org.thivernale.booknetwork.chat;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/messages")
 @RequiredArgsConstructor
+@Tag(name = "Message")
 public class MessageController {
     private final MessageService messageService;
 
@@ -25,6 +28,7 @@ public class MessageController {
     @PostMapping(path = "/upload-media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     void createMediaMessage(
+        @Parameter(required = true, description = "The file to upload")
         @RequestPart("file") MultipartFile file,
         @RequestParam("channel-id") Long channelId,
         Authentication authentication) {

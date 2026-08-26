@@ -1,5 +1,6 @@
 package org.thivernale.booknetwork.chat;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -10,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/channels")
 @RequiredArgsConstructor
+@Tag(name = "Channel")
 public class ChannelController {
     private final ChannelService channelService;
 

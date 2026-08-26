@@ -23,10 +23,13 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-
-    private final RequestMatcher requestMatcher = request -> request.getRequestURI()
-        .contains("/auth");
     private final UserDetailsService userDetailsService;
+
+    /**
+     * Requests that should not be filtered by this filter.
+     */
+    private final RequestMatcher requestMatcher = request -> request.getServletPath()
+        .matches("/(?:auth|swagger-ui|v3/api).*");
 
     @Override
     protected void doFilterInternal(
@@ -34,10 +37,6 @@ public class JwtFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        if (requestMatcher.matches(request)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String jwtToken;
@@ -64,5 +63,10 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return requestMatcher.matches(request);
     }
 }

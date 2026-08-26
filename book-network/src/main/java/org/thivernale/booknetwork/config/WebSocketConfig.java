@@ -10,8 +10,8 @@ import org.springframework.messaging.converter.DefaultContentTypeResolver;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
-import org.springframework.messaging.simp.annotation.support.PrincipalMethodArgumentResolver;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.security.messaging.context.AuthenticationPrincipalArgumentResolver;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -31,6 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
+//            .setAllowedOriginPatterns("*")
             .setAllowedOrigins(frontendUrl.toArray(String[]::new))
 //            .withSockJS()
         ;
@@ -40,21 +41,25 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
         registry.setUserDestinationPrefix("/user");
+        // enable in-memory message broker
         registry.enableSimpleBroker("/user");
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        argumentResolvers.add(new PrincipalMethodArgumentResolver());
+        // Allows resolving the {@link Authentication#getPrincipal()} using the {@link AuthenticationPrincipal} annotation.
+        argumentResolvers.add(new AuthenticationPrincipalArgumentResolver());
     }
 
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
         DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
         resolver.setDefaultMimeType(APPLICATION_JSON);
+
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
         converter.setObjectMapper(new ObjectMapper());
         converter.setContentTypeResolver(resolver);
+
         messageConverters.add(converter);
 
         return false;

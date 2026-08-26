@@ -1,6 +1,6 @@
 package org.thivernale.booknetwork.notification;
 
-public enum NotificationStatus {
+public enum BookNotificationStatus {
     BORROWED,
     RETURNED,
     RETURN_APPROVED

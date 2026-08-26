@@ -11,11 +11,21 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void sendNotification(String userId, Notification notification) {
-        log.info("Sent notification to user {} with payload: {}", userId, notification);
+    public void sendBookNotification(String userId, BookNotification notification) {
+        log.info("Sent book notification to user {} with payload: {}", userId, notification);
         messagingTemplate.convertAndSendToUser(
             userId,
             "/notification",
-            notification);
+            notification
+        );
+    }
+
+    public void sendChatNotification(String userId, ChatNotification notification) {
+        log.info("Sent chat notification to user {} with payload: {}", userId, notification);
+        messagingTemplate.convertAndSendToUser(
+            userId,
+            "/chat",
+            notification
+        );
     }
 }

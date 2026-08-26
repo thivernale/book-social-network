@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thivernale.booknetwork.file.FileStorageService;
+import org.thivernale.booknetwork.notification.ChatNotification;
+import org.thivernale.booknetwork.notification.ChatNotificationCategory;
+import org.thivernale.booknetwork.notification.NotificationService;
 import org.thivernale.booknetwork.user.User;
 
 import java.util.List;
@@ -19,6 +22,7 @@ class MessageService {
     private final MessageMapper messageMapper;
     private final ChannelRepository channelRepository;
     private final FileStorageService fileService;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     List<MessageResponse> findChannelMessages(Long channelId) {
@@ -43,15 +47,38 @@ class MessageService {
 
         messageRepository.save(message);
 
-        // TODO add notification
+        // add notification for new message to recipient
+        notificationService.sendChatNotification(
+            String.valueOf(messageRequest.recipientId()),
+            messageMapper.mapToChatNotification(message)
+        );
     }
 
     void markAsRead(Long channelId, Authentication authentication) {
         channelRepository.findById(channelId)
-            .map((Channel channel) -> messageRepository.updateStatusByChannel(channelId, MessageStatus.READ))
-            .orElseThrow(() -> new EntityNotFoundException("Channel with id %d not found".formatted(channelId)));
+            .map((Channel channel) -> {
+                long updated = messageRepository.updateStatusByChannel(channelId, MessageStatus.READ);
 
-        // TODO add notification to getUserId(authentication)
+                // add notification to the other participant for read messages
+                Long recipientId = getRecipientId(channel, authentication);
+
+                notificationService.sendChatNotification(
+                    recipientId.toString(),
+                    new ChatNotification(
+                        channelId,
+                        null,
+                        getSenderId(channel, authentication),
+                        recipientId,
+                        null,
+                        null,
+                        null,
+                        ChatNotificationCategory.READ
+                    )
+                );
+
+                return updated;
+            })
+            .orElseThrow(() -> new EntityNotFoundException("Channel with id %d not found".formatted(channelId)));
     }
 
     void uploadMediaMessage(Long channelId, MultipartFile file, Authentication authentication) {
@@ -73,21 +100,22 @@ class MessageService {
 
         messageRepository.save(message);
 
-        // TODO add notification
+        // add notification for new message with uploaded media to recipient
+        notificationService.sendChatNotification(
+            String.valueOf(recipientId),
+            messageMapper.mapToChatNotification(message)
+        );
     }
 
     private MessageType getMessageType(String fileExtension) {
-        if (fileExtension.equals("jpg") || fileExtension.equals("jpeg") || fileExtension.equals("png")) {
-            return MessageType.IMAGE;
-        }
-        if (fileExtension.equals("mp3") || fileExtension.equals("wav") || fileExtension.equals("ogg") || fileExtension.equals("flac") || fileExtension.equals("m4a") || fileExtension.equals("wma") || fileExtension.equals("aac") || fileExtension.equals("aiff")) {
-            return MessageType.AUDIO;
-        }
-        if (fileExtension.equals("mp4") || fileExtension.equals("mov") || fileExtension.equals("avi")) {
-            return MessageType.VIDEO;
-        }
-        // TODO add more file types like pdf, doc, etc. if needed
-        return MessageType.TEXT;
+        return switch (fileExtension) {
+            case "jpg", "jpeg", "png" -> MessageType.IMAGE;
+            case "mp3", "wav", "ogg", "flac", "m4a", "wma", "aac", "aiff" -> MessageType.AUDIO;
+            case "mp4", "mov", "avi" -> MessageType.VIDEO;
+            default ->
+                // TODO add more file types like pdf, doc, etc. if needed
+                MessageType.TEXT;
+        };
     }
 
     /**

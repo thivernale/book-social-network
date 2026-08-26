@@ -21,7 +21,7 @@ import org.thivernale.booknetwork.exception.OperationNotPermittedException;
 import org.thivernale.booknetwork.file.FileStorageService;
 import org.thivernale.booknetwork.history.BookTransactionHistory;
 import org.thivernale.booknetwork.history.BookTransactionHistoryRepository;
-import org.thivernale.booknetwork.notification.Notification;
+import org.thivernale.booknetwork.notification.BookNotification;
 import org.thivernale.booknetwork.notification.NotificationService;
 import org.thivernale.booknetwork.user.User;
 
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static org.thivernale.booknetwork.notification.NotificationStatus.*;
+import static org.thivernale.booknetwork.notification.BookNotificationStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -159,11 +159,11 @@ public class BookService {
 
         BookTransactionHistory saved = historyRepository.save(history);
 
-        notificationService.sendNotification(
+        notificationService.sendBookNotification(
             book.getOwner()
                 .getId()
                 .toString(),
-            new Notification(BORROWED, "Book has been borrowed", book.getTitle()));
+            new BookNotification(BORROWED, "Book has been borrowed", book.getTitle()));
 
         return saved
             .getId();
@@ -185,11 +185,11 @@ public class BookService {
         history.setReturned(true);
         BookTransactionHistory saved = historyRepository.save(history);
 
-        notificationService.sendNotification(
+        notificationService.sendBookNotification(
             book.getOwner()
                 .getId()
                 .toString(),
-            new Notification(RETURNED, "Book has been returned", book.getTitle()));
+            new BookNotification(RETURNED, "Book has been returned", book.getTitle()));
 
         return saved
             .getId();
@@ -211,11 +211,11 @@ public class BookService {
         history.setReturnApproved(true);
         BookTransactionHistory saved = historyRepository.save(history);
 
-        notificationService.sendNotification(
+        notificationService.sendBookNotification(
             saved.getUser()
                 .getId()
                 .toString(),
-            new Notification(RETURN_APPROVED, "Book return has been approved", book.getTitle()));
+            new BookNotification(RETURN_APPROVED, "Book return has been approved", book.getTitle()));
 
         return saved
             .getId();

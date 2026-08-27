@@ -1,49 +1,39 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Subscription } from 'rxjs';
 import { IMessage } from '@stomp/rx-stomp';
 import { ToastrService } from 'ngx-toastr';
-
-import { TokenService } from '../../../../token/token.service';
-import { NotificationService } from '../../../../notification/notification.service';
-import { Notification } from '../../../../notification/notification';
+import { Subscription } from 'rxjs';
+import { Notification } from '../../notification/notification';
+import { NotificationService } from '../../notification/notification.service';
+import { TokenService } from '../../token/token.service';
+import { DynamicMenuService } from './services/dynamic-menu.service';
 
 @Component({
   selector: 'app-menu',
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.scss',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuComponent implements OnInit, OnDestroy {
+  protected readonly username = signal('');
+  protected readonly notifications = signal<Notification[]>([]);
+  protected readonly unreadCount = signal(0);
+  protected menuItems = inject(DynamicMenuService).menuItems;
   private tokenService = inject(TokenService);
   private router = inject(Router);
+
   private notificationService = inject(NotificationService);
   private toastrService = inject(ToastrService);
-
-  protected username = '';
-  protected notifications: Notification[] = [];
   private topicSubscription?: Subscription;
 
   ngOnInit(): void {
-    const linkElements = document.querySelectorAll('a.nav-link');
-    linkElements.forEach(link => {
-      if (window.location.href.endsWith(link.getAttribute('href') || '')) {
-        link.classList.add('active');
-      }
-      link.addEventListener('click', () => {
-        linkElements.forEach(l => {
-          l.classList.remove('active');
-        });
-        link.classList.add('active');
-      });
-    });
-
     if (this.tokenService.token) {
       const jwtHelper = new JwtHelperService();
       const decodeToken = jwtHelper.decodeToken<{ fullName: string, id: string }>(this.tokenService.token);
-      this.username = decodeToken?.fullName ?? '';
+      this.username.set(decodeToken?.fullName ?? '');
       const userId = decodeToken?.id ?? '';
 
       // subscribe to notifications
@@ -55,7 +45,8 @@ export class MenuComponent implements OnInit, OnDestroy {
       ).subscribe((message: IMessage) => {
         const notification: Notification = JSON.parse(message.body);
         if (notification) {
-          this.notifications.unshift(notification);
+          this.notifications.update(notifications => [notification, ...notifications]);
+          this.unreadCount.update(count => count + 1);
           this.toastrService.info(notification.content, notification.title);
         }
       });
@@ -65,6 +56,15 @@ export class MenuComponent implements OnInit, OnDestroy {
   async ngOnDestroy(): Promise<void> {
     this.topicSubscription?.unsubscribe();
     await this.notificationService.deactivate();
+  }
+
+  protected markAllRead() {
+    this.unreadCount.set(0);
+  }
+
+  protected clearNotifications() {
+    this.notifications.set([]);
+    this.unreadCount.set(0);
   }
 
   protected async logout() {

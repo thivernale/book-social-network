@@ -1,0 +1,60 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="javascript:void(0)">BSN</a>
+    <button
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+      class="navbar-toggler" data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse"
+      type="button"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        @for (item of menuItems(); track item.link) {
+          <li class="nav-item">
+            <a [routerLinkActiveOptions]="{exact: true}" [routerLink]="item.link" aria-current="page"
+               class="nav-link" routerLinkActive="active">
+              <i class="fa {{ item.icon }}"></i>&nbsp;{{ item.label }}
+            </a>
+          </li>
+        }
+      </ul>
+      <form class="d-flex gap-2 align-items-center" role="search">
+        <div class="dropdown">
+          <button
+            (click)="markAllRead()" [attr.aria-label]="'Notifications, ' + unreadCount() + ' unread'"
+            aria-expanded="false" class="btn position-relative" data-bs-toggle="dropdown" type="button"
+          >
+            <i class="fas fa-bell h4 mb-0"></i>
+            @if (unreadCount()) {
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ unreadCount() > 99 ? '99+' : unreadCount() }}
+              </span>
+            }
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            @for (notification of notifications(); track notification) {
+              <li>
+                <span class="dropdown-item border-bottom">
+                  <i class="fas fa-bell"></i>&nbsp;{{ notification.title }}: {{ notification.content }}
+                </span>
+              </li>
+            } @empty {
+              <li><span class="dropdown-item-text text-secondary">No notifications</span></li>
+            }
+            @if (notifications().length) {
+              <li>
+                <button (click)="clearNotifications()" class="dropdown-item text-danger" type="button">
+                  <i class="fas fa-trash"></i>&nbsp;Clear all
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+        <span>Welcome</span>
+        <span class="text-capitalize fw-bold text-nowrap">{{ username() }}</span>
+        <button (click)="logout()" class="btn btn-link" type="button"><i class="fas fa-door-open"></i></button>
+      </form>
+    </div>
+  </div>
+</nav>

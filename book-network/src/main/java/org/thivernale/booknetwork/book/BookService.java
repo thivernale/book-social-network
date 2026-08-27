@@ -84,6 +84,7 @@ public class BookService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication authentication) {
         return getPageResponse(repository.findByShareableTrueAndArchivedFalseAndOwner_IdNot(
             getPageable(page, size),
@@ -91,6 +92,7 @@ public class BookService {
         ), bookMapper::toBookResponse);
     }
 
+    @Transactional(readOnly = true)
     public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication authentication) {
         return getPageResponse(repository.findAll(
             BookSpecification.withOwnerId(getCurrentUser(authentication).getId()),
@@ -169,6 +171,7 @@ public class BookService {
             .getId();
     }
 
+    @Transactional
     public Long returnBorrowedBook(Long bookId, Authentication authentication) {
         Book book = getBook(bookId);
         if (book.isArchived() || !book.isShareable()) {
@@ -195,6 +198,7 @@ public class BookService {
             .getId();
     }
 
+    @Transactional
     public Long approveReturnBorrowedBook(Long bookId, Authentication authentication) {
         Book book = getBook(bookId);
         if (book.isArchived() || !book.isShareable()) {
@@ -211,6 +215,7 @@ public class BookService {
         history.setReturnApproved(true);
         BookTransactionHistory saved = historyRepository.save(history);
 
+        // TODO refactor to transactional outbox pattern to avoid sending misleading notifications
         notificationService.sendBookNotification(
             saved.getUser()
                 .getId()

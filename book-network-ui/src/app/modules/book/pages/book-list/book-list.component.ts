@@ -48,4 +48,14 @@ export class BookListComponent implements OnInit {
       },
     });
   }
+
+  protected showBookDetails($event: BookResponse) {
+    console.log($event);
+    throw new Error('Method not implemented.');
+  }
+
+  protected addBookToWaitingList($event: BookResponse) {
+    console.log($event);
+    throw new Error('Method not implemented.');
+  }
 }

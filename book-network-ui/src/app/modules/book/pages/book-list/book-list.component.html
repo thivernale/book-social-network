@@ -4,7 +4,9 @@
 <div class="d-flex justify-content-start gap-2 flex-wrap">
   @for (book of bookResponse.content; track book.id) {
     <app-book-card
+      (addToWaitingList)="addBookToWaitingList($event)"
       (borrow)="borrowBook($event)"
+      (details)="showBookDetails($event)"
       [book]="book"
     />
   }

@@ -1,5 +1,5 @@
 <h3>My Borrowed Books</h3>
-<hr />
+<hr/>
 @if (selectedBook) {
   <div class="d-flex flex-column col-12 col-md-6">
     <h3>Return and Share Feedback</h3>
@@ -28,14 +28,14 @@
         <div class="col">{{ selectedBook.rate }}</div>
       </div>
     </div>
-    <hr />
+    <hr/>
     <div class="col-12">
       <form #form="ngForm" action="" class="g-3 row">
         <div class="d-flex gap-3">
           <input [(ngModel)]="feedbackRequest.score" [max]="MAX_SCORE" class="form-range w-25" id="score" min="0"
                  name="score"
-                 step="0.5" type="range" />
-          <app-rating [rating]="feedbackRequest.score!" />
+                 step="0.5" type="range"/>
+          <app-rating [rating]="feedbackRequest.score!"/>
           {{ feedbackRequest.score }}
         </div>
         <div class="col-12">
@@ -72,29 +72,29 @@
     </tr>
     </thead>
     <tbody>
-    @for (book of bookResponse.content; track book.id; let i = $index) {
-      <tr>
-        <th scope="row">{{ i + 1 }}</th>
-        <td>{{ book.title }}</td>
-        <td>{{ book.authorName }}</td>
-        <td>{{ book.isbn }}</td>
-        <td><i class="fas fa-star text-warning"></i>{{ book.rate }}</td>
-        <td>
-          <div class="d-flex gap-2">
-            @if (book.returned) {
-              <i class="fas fa-paper-plane text-success"></i>
-            } @else {
-              <i
-                (click)="setSelectedBook(book)" (keydown.enter)="setSelectedBook(book)"
-                aria-label="Return book" class="fa-regular fa-paper-plane text-primary cursor-pointer"
-                role="button" tabindex="0"
-              ></i>
-            }
-            <i [class.text-success]="book.returnApproved" class="fas fa-circle-check"></i>
-          </div>
-        </td>
-      </tr>
-    }
+      @for (book of bookResponse.content; track book.id; let i = $index) {
+        <tr>
+          <th scope="row">{{ i + 1 }}</th>
+          <td>{{ book.title }}</td>
+          <td>{{ book.authorName }}</td>
+          <td>{{ book.isbn }}</td>
+          <td><i class="fas fa-star text-warning"></i>{{ book.rate }}</td>
+          <td>
+            <div class="d-flex gap-2">
+              @if (book.returned) {
+                <i class="fas fa-paper-plane text-success"></i>
+                <i [class.text-success]="book.returnApproved" class="fas fa-circle-check"></i>
+              } @else {
+                <i
+                  (click)="setSelectedBook(book)" (keydown.enter)="setSelectedBook(book)"
+                  aria-label="Return book" class="fa-regular fa-paper-plane text-primary cursor-pointer"
+                  role="button" tabindex="0"
+                ></i>
+              }
+            </div>
+          </td>
+        </tr>
+      }
     </tbody>
   </table>
 

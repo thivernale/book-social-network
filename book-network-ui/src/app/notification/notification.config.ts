@@ -1,3 +1,4 @@
+import { isDevMode } from '@angular/core';
 import { RxStompConfig } from '@stomp/rx-stomp';
 
 const WS_ROOT_URL = 'ws://127.0.0.1:8088/api/v1/ws';
@@ -29,6 +30,8 @@ export const notificationConfig: RxStompConfig = {
   // It can be quite verbose, not recommended in production
   // Skip this key to stop logging to console
   debug: (msg: string): void => {
-    console.log(new Date(), msg);
+    if (isDevMode()) {
+      console.debug(new Date(), msg);
+    }
   },
 };

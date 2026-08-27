@@ -26,13 +26,15 @@
               [ngClass]="{ 'fa-regular text-primary': !book.returned, 'fa-solid text-success': book.returned }"
               class="fa-paper-plane"
             ></i>
-            @if (book.returned && !book.returnApproved) {
-              <i
-                (click)="approveBookReturn(book)" (keydown.enter)="approveBookReturn(book)"
-                aria-label="Approve return" class="fas fa-circle-check cursor-pointer" role="button" tabindex="0"
-              ></i>
-            } @else {
-              <i [class.text-success]="book.returnApproved" class="fas fa-circle-check"></i>
+            @if (book.returned) {
+              @if (!book.returnApproved) {
+                <i
+                  (click)="approveBookReturn(book)" (keydown.enter)="approveBookReturn(book)"
+                  aria-label="Approve return" class="fas fa-circle-check cursor-pointer" role="button" tabindex="0"
+                ></i>
+              } @else {
+                <i [class.text-success]="book.returnApproved" class="fas fa-circle-check"></i>
+              }
             }
           </div>
         </td>

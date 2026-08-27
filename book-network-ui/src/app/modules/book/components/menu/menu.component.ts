@@ -1,10 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Subscription } from 'rxjs';
 import { IMessage } from '@stomp/rx-stomp';
 import { ToastrService } from 'ngx-toastr';
-import { NgForOf } from '@angular/common';
 
 import { TokenService } from '../../../../token/token.service';
 import { NotificationService } from '../../../../notification/notification.service';
@@ -12,23 +11,20 @@ import { Notification } from '../../../../notification/notification';
 
 @Component({
   selector: 'app-menu',
-  imports: [RouterLink, NgForOf],
+  imports: [RouterLink],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.scss',
   standalone: true,
 })
 export class MenuComponent implements OnInit, OnDestroy {
+  private tokenService = inject(TokenService);
+  private router = inject(Router);
+  private notificationService = inject(NotificationService);
+  private toastrService = inject(ToastrService);
+
   protected username = '';
   protected notifications: Notification[] = [];
-  private topicSubscription: Subscription = {} as Subscription;
-
-  constructor(
-    private tokenService: TokenService,
-    private router: Router,
-    private notificationService: NotificationService,
-    private toastrService: ToastrService,
-  ) {
-  }
+  private topicSubscription?: Subscription;
 
   ngOnInit(): void {
     const linkElements = document.querySelectorAll('a.nav-link');
@@ -67,7 +63,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy(): Promise<void> {
-    this.topicSubscription.unsubscribe();
+    this.topicSubscription?.unsubscribe();
     await this.notificationService.deactivate();
   }
 

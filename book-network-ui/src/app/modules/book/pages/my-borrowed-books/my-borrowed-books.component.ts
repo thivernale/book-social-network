@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { NgForOf, NgIf } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 
@@ -13,11 +12,15 @@ import { RatingComponent } from '../../components/rating/rating.component';
 
 @Component({
   selector: 'app-my-borrowed-books',
-  imports: [PaginationComponent, NgForOf, NgIf, ReactiveFormsModule, FormsModule, RatingComponent],
+  imports: [PaginationComponent, ReactiveFormsModule, FormsModule, RatingComponent],
   templateUrl: './my-borrowed-books.component.html',
   standalone: true,
 })
 export class MyBorrowedBooksComponent implements OnInit {
+  private bookService = inject(BookService);
+  private feedbackService = inject(FeedbackService);
+  private toastrService = inject(ToastrService);
+
   protected bookResponse: PageResponseBorrowedBookResponse = {};
   protected page = 0;
   protected size = 5;
@@ -25,13 +28,6 @@ export class MyBorrowedBooksComponent implements OnInit {
   protected readonly MAX_SCORE = 5;
   protected feedbackRequest: FeedbackRequest = { bookId: 0, comment: '', score: this.MAX_SCORE };
   protected errorMsg: string[] = [];
-
-  constructor(
-    private bookService: BookService,
-    private feedbackService: FeedbackService,
-    private toastrService: ToastrService,
-  ) {
-  }
 
   ngOnInit(): void {
     this.findAllBorrowedBooks();

@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { NgForOf, NgIf } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -10,8 +9,6 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-manage-book',
   imports: [
-    NgForOf,
-    NgIf,
     FormsModule,
     RouterLink,
   ],
@@ -19,21 +16,18 @@ import { ToastrService } from 'ngx-toastr';
   standalone: true,
 })
 export class ManageBookComponent implements OnInit {
+  private bookService = inject(BookService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private toastrService = inject(ToastrService);
+
   protected errorMsg: string[] = [];
   protected selectedPicture = '';
   protected bookRequest: BookRequest = { authorName: '', isbn: '', synopsis: '', title: '' };
-  private selectedBookCover: any;
+  private selectedBookCover?: File;
 
-  constructor(
-    private bookService: BookService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private toastrService: ToastrService,
-  ) {
-  }
-
-  onFileSelected(event: Event & any) {
-    this.selectedBookCover = event.target.files[0];
+  onFileSelected(event: Event) {
+    this.selectedBookCover = (event.target as HTMLInputElement).files?.[0];
     if (this.selectedBookCover) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -48,8 +42,15 @@ export class ManageBookComponent implements OnInit {
     if (bookId) {
       this.bookService.findBookById({ 'book-id': bookId }).subscribe({
         next: bookResponse => {
-          const { rate, archived, owner, bookCover, ...bookRequest } = bookResponse;
-          this.bookRequest = bookRequest as BookRequest;
+          const { id, title, authorName, isbn, synopsis, shareable, bookCover } = bookResponse;
+          this.bookRequest = {
+            id,
+            title: title ?? '',
+            authorName: authorName ?? '',
+            isbn: isbn ?? '',
+            synopsis: synopsis ?? '',
+            shareable,
+          };
           if (bookCover) {
             this.selectedPicture = `data:image/jpg;base64,${bookCover}`;
           }

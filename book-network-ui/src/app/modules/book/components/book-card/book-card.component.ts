@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 import { BookResponse } from '../../../../services/models/book-response';
 import { RatingComponent } from '../rating/rating.component';
@@ -7,7 +7,6 @@ import { RatingComponent } from '../rating/rating.component';
 @Component({
   selector: 'app-book-card',
   imports: [
-    NgIf,
     RatingComponent,
     NgClass,
   ],

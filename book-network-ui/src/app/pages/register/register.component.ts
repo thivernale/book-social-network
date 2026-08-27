@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -8,11 +7,14 @@ import { RegistrationRequest } from '../../services/models/registration-request'
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule],
   templateUrl: './register.component.html',
   standalone: true,
 })
 export class RegisterComponent {
+  private router = inject(Router);
+  private authService = inject(AuthenticationService);
+
   protected regRequest: RegistrationRequest = {
     firstname: '',
     lastname: '',
@@ -20,12 +22,6 @@ export class RegisterComponent {
     password: '',
   };
   protected errorMsg: string[] = [];
-
-  constructor(
-    private router: Router,
-    private authService: AuthenticationService,
-  ) {
-  }
 
   protected async register() {
     this.errorMsg = [];

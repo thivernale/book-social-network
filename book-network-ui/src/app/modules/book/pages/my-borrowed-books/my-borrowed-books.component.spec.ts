@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideToastr } from 'ngx-toastr';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
@@ -12,6 +13,7 @@ describe('MyBorrowedBooksComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MyBorrowedBooksComponent],
       providers: [
+        provideToastr(),
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

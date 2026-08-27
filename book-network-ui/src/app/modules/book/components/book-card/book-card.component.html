@@ -3,43 +3,64 @@
   [class.border-warning]="manage && book.archived"
   class="card"
 >
-  <img *ngIf="bookCover else noImage" [src]="bookCover" alt="" class="card-img-top" height="200" />
+  @if (bookCover) {
+    <img [src]="bookCover" alt="" class="card-img-top" height="200"/>
+  } @else {
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 200px">
+      <i class="fas fa-image" style="font-size: 144px"></i>
+    </div>
+  }
   <div class="card-body overflow-auto">
     <h5 class="card-title fs-6 fw-bold mb-1 text-nowrap"><i class="fas fa-book"></i>&nbsp;{{ book.title }}</h5>
     <h5 class="card-subtitle fs-6 mb-1 text-secondary"><i class="fas fa-user-check"></i>&nbsp;{{ book.authorName }}</h5>
     <h6 class="card-subtitle fs-6 mb-1 text-secondary"><i class="fas fa-code"></i>&nbsp;{{ book.isbn }}</h6>
     <h6 class="card-subtitle fs-6 mb-1 text-secondary"><i class="fas fa-user"></i>&nbsp;{{ book.owner }}</h6>
-    <hr />
+    <hr/>
     <p class="card-text">{{ book.synopsis }}</p>
   </div>
   <div class="card-footer d-flex gap-2 justify-content-between align-items-center">
     <div class="d-flex gap-2">
-      <app-rating [rating]="book.rate ?? 0" />
-      <span *ngIf="book.rate ?? 0 > 0" class="fw-bold">
-        {{ book.rate }}
-      </span>
+      <app-rating [rating]="book.rate ?? 0"/>
+      @if ((book.rate ?? 0) > 0) {
+        <span class="fw-bold">
+          {{ book.rate }}
+        </span>
+      }
     </div>
-    <div *ngIf="!manage" class="d-flex gap-2">
-      <i (click)="onShowDetails()" class="fas text-primary fa-circle-info"></i>
-      <i (click)="onBorrow()" class="fas text-primary fa-list-check"></i>
-      <i (click)="onAddToWaitingList()" class="fas text-danger fa-heart"></i>
-    </div>
-    <div *ngIf="manage" class="d-flex gap-2">
-      <i (click)="onEdit()" class="fas text-success fa-edit"></i>
-      <i
-        (click)="onShare()" [ngClass]="{ 'fa-eye-slash': book.shareable, 'fa-share': !book.shareable }"
-        class="fas text-primary"
-      ></i>
-      <i
-        (click)="onArchive()" [ngClass]="{ 'fa-box-open': book.archived, 'fa-archive': !book.archived }"
-        class="fas text-danger"
-      ></i>
-    </div>
+    @if (manage) {
+      <div class="d-flex gap-2">
+        <i
+          (click)="onEdit()" (keydown.enter)="onEdit()"
+          aria-label="Edit" class="fas text-success fa-edit" role="button" tabindex="0"
+        ></i>
+        <i
+          (click)="onShare()" (keydown.enter)="onShare()"
+          [attr.aria-label]="book.shareable ? 'Unshare' : 'Share'"
+          [ngClass]="{ 'fa-eye-slash': book.shareable, 'fa-share': !book.shareable }"
+          class="fas text-primary" role="button" tabindex="0"
+        ></i>
+        <i
+          (click)="onArchive()" (keydown.enter)="onArchive()"
+          [attr.aria-label]="book.archived ? 'Unarchive' : 'Archive'"
+          [ngClass]="{ 'fa-box-open': book.archived, 'fa-archive': !book.archived }"
+          class="fas text-danger" role="button" tabindex="0"
+        ></i>
+      </div>
+    } @else {
+      <div class="d-flex gap-2">
+        <i
+          (click)="onShowDetails()" (keydown.enter)="onShowDetails()"
+          aria-label="Details" class="fas text-primary fa-circle-info" role="button" tabindex="0"
+        ></i>
+        <i
+          (click)="onBorrow()" (keydown.enter)="onBorrow()"
+          aria-label="Borrow" class="fas text-primary fa-list-check" role="button" tabindex="0"
+        ></i>
+        <i
+          (click)="onAddToWaitingList()" (keydown.enter)="onAddToWaitingList()"
+          aria-label="Add to waiting list" class="fas text-danger fa-heart" role="button" tabindex="0"
+        ></i>
+      </div>
+    }
   </div>
 </div>
-
-<ng-template #noImage>
-  <div class="d-flex justify-content-center align-items-center" style="min-height: 200px">
-    <i class="fas fa-image" style="font-size: 144px"></i>
-  </div>
-</ng-template>

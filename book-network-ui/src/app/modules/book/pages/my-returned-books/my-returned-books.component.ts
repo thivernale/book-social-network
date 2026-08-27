@@ -1,5 +1,5 @@
-import { Component, effect, OnInit } from '@angular/core';
-import { NgClass, NgForOf, NgIf } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 
 import { BookService } from '../../../../services/services/book.service';
@@ -9,23 +9,17 @@ import { BorrowedBookResponse } from '../../../../services/models/borrowed-book-
 
 @Component({
   selector: 'app-my-returned-books',
-  imports: [PaginationComponent, NgForOf, NgIf, NgClass],
+  imports: [PaginationComponent, NgClass],
   templateUrl: './my-returned-books.component.html',
   standalone: true,
 })
 export class MyReturnedBooksComponent implements OnInit {
+  private bookService = inject(BookService);
+  private toastrService = inject(ToastrService);
 
-  someEffect = effect(() => {
-  }, {});
   protected bookResponse: PageResponseBorrowedBookResponse = {};
   protected page = 0;
   protected size = 5;
-
-  constructor(
-    private bookService: BookService,
-    private toastrService: ToastrService,
-  ) {
-  }
 
   ngOnInit(): void {
     this.findAllReturnedBooks();

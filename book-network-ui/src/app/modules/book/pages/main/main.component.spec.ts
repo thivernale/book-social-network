@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideToastr } from 'ngx-toastr';
 
 import { MainComponent } from './main.component';
 import { provideRouter } from '@angular/router';
@@ -10,7 +11,7 @@ describe('MainComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MainComponent],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), provideToastr()],
     })
       .compileComponents();
 

@@ -1,14 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { NgForOf, NgIf } from '@angular/common';
 
 import { PageResponseBookResponse } from '../../../../services/models/page-response-book-response';
 
 @Component({
   selector: 'app-pagination',
-  imports: [
-    NgForOf,
-    NgIf,
-  ],
+  imports: [],
   templateUrl: './pagination.component.html',
   standalone: true,
 })

@@ -1,12 +1,12 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { provideToastr } from 'ngx-toastr';
 
 import { routes } from './app.routes';
-import { httpTokenInterceptor } from './services/interceptor/http-token.interceptor';
-import { ApiConfiguration, ApiConfigurationParams } from './services/api-configuration';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideToastr } from 'ngx-toastr';
+import { httpTokenInterceptor } from './interceptor/http-token.interceptor';
+import { provideApiConfiguration } from './services/api-configuration';
 
 //TODO externalize rootUrl of API service
 const API_ROOT_URL = 'http://localhost:8088/api/v1';
@@ -25,6 +25,6 @@ export const appConfig: ApplicationConfig = {
       positionClass: 'toast-bottom-right',
       timeOut: 8000,
     }),
-    { provide: ApiConfiguration, useValue: { rootUrl: API_ROOT_URL } as ApiConfigurationParams },
+    provideApiConfiguration(API_ROOT_URL),
   ],
 };

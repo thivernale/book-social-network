@@ -1,4 +1,3 @@
-import { TestBed } from '@angular/core/testing';
 import {
   HttpEventType,
   HttpHandlerFn,
@@ -8,17 +7,17 @@ import {
   provideHttpClient,
   withInterceptors,
 } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { TokenService } from '../token/token.service';
 
 import { httpTokenInterceptor } from './http-token.interceptor';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TokenService } from '../../token/token.service';
-import { of } from 'rxjs';
 
 describe('httpTokenInterceptor', () => {
   const interceptor: HttpInterceptorFn = (req, next) =>
     TestBed.runInInjectionContext(() => httpTokenInterceptor(req, next));
 
-  let tokenService: TokenService;
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
@@ -29,7 +28,6 @@ describe('httpTokenInterceptor', () => {
       ],
     });
 
-    tokenService = TestBed.inject(TokenService);
     httpTestingController = TestBed.inject(HttpTestingController);
   });
 
@@ -44,7 +42,7 @@ describe('httpTokenInterceptor', () => {
   it('should do nothing when no token present', () => {
     const reqParam = new HttpRequest('GET', 'http://localhost:8088/api/v1');
     const nextParam: HttpHandlerFn = (req) => {
-      return of(new HttpResponse(req));
+      return of(new HttpResponse({ headers: req.headers, url: req.url }));
     };
     const tokenService = TestBed.inject(TokenService);
     spyOnProperty(tokenService, 'token', 'get').and.returnValue(null as unknown as string);
@@ -59,7 +57,7 @@ describe('httpTokenInterceptor', () => {
   it('should add Authorization header when token is present', () => {
     const reqParam = new HttpRequest('GET', 'http://localhost:8088/api/v1');
     const nextParam: HttpHandlerFn = (req) => {
-      return of(new HttpResponse(req));
+      return of(new HttpResponse({ headers: req.headers, url: req.url }));
     };
     const tokenService = TestBed.inject(TokenService);
     spyOnProperty(tokenService, 'token', 'get').and.returnValue('123456');

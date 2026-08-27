@@ -46,14 +46,16 @@
             </span>
           </i>
           <ul class="dropdown-menu">
-            <li *ngFor="let notification of notifications">
-              <span class="dropdown-item cursor-pointer border-bottom">
-                <i class="fas fa-bell"></i>&nbsp;{{ notification.title }}: {{ notification.content }}
-              </span>
-            </li>
+            @for (notification of notifications; track notification) {
+              <li>
+                <span class="dropdown-item cursor-pointer border-bottom">
+                  <i class="fas fa-bell"></i>&nbsp;{{ notification.title }}: {{ notification.content }}
+                </span>
+              </li>
+            }
           </ul>
         </button>
-        <input aria-label="Search" class="form-control" name="search" placeholder="Find a book" type="text" />
+        <input aria-label="Search" class="form-control" name="search" placeholder="Find a book" type="text"/>
         <button class="btn btn-outline-success" type="button"><i class="fas fa-search"></i></button>
         <span>Welcome</span>
         <span class="text-capitalize fw-bold text-nowrap">{{ username }}</span>

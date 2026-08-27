@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideToastr } from 'ngx-toastr';
 
 import { MenuComponent } from './menu.component';
 import { provideRouter } from '@angular/router';
@@ -11,7 +12,7 @@ describe('MenuComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MenuComponent],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), provideToastr()],
     })
       .compileComponents();
 

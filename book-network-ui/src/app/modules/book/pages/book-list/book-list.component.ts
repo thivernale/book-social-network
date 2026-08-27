@@ -1,16 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { BookResponse } from '../../../../services/models/book-response';
+import { PageResponseBookResponse } from '../../../../services/models/page-response-book-response';
 
 import { BookService } from '../../../../services/services/book.service';
-import { PageResponseBookResponse } from '../../../../services/models/page-response-book-response';
-import { BookResponse } from '../../../../services/models/book-response';
 import { BookCardComponent } from '../../components/book-card/book-card.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 
 @Component({
   selector: 'app-book-list',
-  imports: [CommonModule, BookCardComponent, PaginationComponent],
+  imports: [BookCardComponent, PaginationComponent],
   templateUrl: './book-list.component.html',
   standalone: true,
 })
@@ -18,12 +17,8 @@ export class BookListComponent implements OnInit {
   protected bookResponse: PageResponseBookResponse = {};
   protected page = 0;
   protected size = 5;
-
-  constructor(
-    private bookService: BookService,
-    private toastrService: ToastrService,
-  ) {
-  }
+  private bookService = inject(BookService);
+  private toastrService = inject(ToastrService);
 
   ngOnInit(): void {
     this.findAllBooks();

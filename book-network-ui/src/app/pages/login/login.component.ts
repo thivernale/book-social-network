@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -9,20 +8,17 @@ import { TokenService } from '../../token/token.service';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule],
   templateUrl: './login.component.html',
   standalone: true,
 })
 export class LoginComponent {
+  private router = inject(Router);
+  private authService = inject(AuthenticationService);
+  private tokenService = inject(TokenService);
+
   protected authRequest: AuthenticationRequest = { email: '', password: '' };
   protected errorMsg: string[] = [];
-
-  constructor(
-    private router: Router,
-    private authService: AuthenticationService,
-    private tokenService: TokenService,
-  ) {
-  }
 
   protected login() {
     this.errorMsg = [];

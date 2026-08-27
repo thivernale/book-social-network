@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { BookService } from '../../../../services/services/book.service';
@@ -11,22 +10,19 @@ import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-my-books',
-  imports: [CommonModule, BookCardComponent, RouterLink, PaginationComponent],
+  imports: [BookCardComponent, RouterLink, PaginationComponent],
   templateUrl: './my-books.component.html',
   standalone: true,
 })
 export class MyBooksComponent implements OnInit {
+  private bookService = inject(BookService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private toastrService = inject(ToastrService);
+
   protected bookResponse: PageResponseBookResponse = {};
   protected page = 0;
   protected size = 2;
-
-  constructor(
-    private bookService: BookService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private toastrService: ToastrService,
-  ) {
-  }
 
   ngOnInit(): void {
     this.findAllBooks();

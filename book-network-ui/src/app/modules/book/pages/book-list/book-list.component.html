@@ -1,12 +1,13 @@
 <h3>Book list</h3>
-<hr />
+<hr/>
 
 <div class="d-flex justify-content-start gap-2 flex-wrap">
-  <app-book-card
-    (borrow)="borrowBook($event)"
-    *ngFor="let book of bookResponse.content"
-    [book]="book"
-  />
+  @for (book of bookResponse.content; track book.id) {
+    <app-book-card
+      (borrow)="borrowBook($event)"
+      [book]="book"
+    />
+  }
 </div>
 
 <app-pagination

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideToastr } from 'ngx-toastr';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
@@ -13,6 +14,7 @@ describe('ManageBookComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ManageBookComponent],
       providers: [
+        provideToastr(),
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),

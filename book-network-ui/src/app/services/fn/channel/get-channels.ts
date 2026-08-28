@@ -4,16 +4,16 @@
 import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { StrictHttpResponse } from '../../strict-http-response';
-import { RequestBuilder } from '../../request-builder';
 
 import { ChannelResponse } from '../../models/channel-response';
+import { RequestBuilder } from '../../request-builder';
+import { StrictHttpResponse } from '../../strict-http-response';
 
-export interface GetChannels1$Params {
+export interface GetChannels$Params {
 }
 
-export function getChannels1(http: HttpClient, rootUrl: string, params?: GetChannels1$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ChannelResponse>>> {
-  const rb = new RequestBuilder(rootUrl, getChannels1.PATH, 'get');
+export function getChannels(http: HttpClient, rootUrl: string, params?: GetChannels$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ChannelResponse>>> {
+  const rb = new RequestBuilder(rootUrl, getChannels.PATH, 'get');
   if (params) {
   }
 
@@ -27,4 +27,4 @@ export function getChannels1(http: HttpClient, rootUrl: string, params?: GetChan
   );
 }
 
-getChannels1.PATH = '/channels';
+getChannels.PATH = '/channels';

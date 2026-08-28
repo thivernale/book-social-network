@@ -3,8 +3,8 @@
 
 export type { CreateMessage$Params as CreateMessage$Params } from './fn/message/create-message';
 export { createMessage as createMessage } from './fn/message/create-message';
-export type { GetChannels$Params as GetChannels$Params } from './fn/message/get-channels';
-export { getChannels as getChannels } from './fn/message/get-channels';
+export type { MarkAsRead$Params as MarkAsRead$Params } from './fn/message/mark-as-read';
+export { markAsRead as markAsRead } from './fn/message/mark-as-read';
 export type { CreateMediaMessage$Params as CreateMediaMessage$Params } from './fn/message/create-media-message';
 export { createMediaMessage as createMediaMessage } from './fn/message/create-media-message';
 export type { GetMessages$Params as GetMessages$Params } from './fn/message/get-messages';
@@ -15,8 +15,8 @@ export type {
   FindAllFeedbacksOfBook$Params as FindAllFeedbacksOfBook$Params
 } from './fn/feedback/find-all-feedbacks-of-book';
 export { findAllFeedbacksOfBook as findAllFeedbacksOfBook } from './fn/feedback/find-all-feedbacks-of-book';
-export type { GetChannels1$Params as GetChannels1$Params } from './fn/channel/get-channels-1';
-export { getChannels1 as getChannels1 } from './fn/channel/get-channels-1';
+export type { GetChannels$Params as GetChannels$Params } from './fn/channel/get-channels';
+export { getChannels as getChannels } from './fn/channel/get-channels';
 export type { CreateChannel$Params as CreateChannel$Params } from './fn/channel/create-channel';
 export { createChannel as createChannel } from './fn/channel/create-channel';
 export type { FindAllBooks$Params as FindAllBooks$Params } from './fn/book/find-all-books';

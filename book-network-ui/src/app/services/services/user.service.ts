@@ -5,23 +5,22 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ApiConfiguration } from '../api-configuration';
 
 import { BaseService } from '../base-service';
-import { ApiConfiguration } from '../api-configuration';
-import { StrictHttpResponse } from '../strict-http-response';
 
-import { getAllUsers } from '../fn/user/get-all-users';
-import { GetAllUsers$Params } from '../fn/user/get-all-users';
+import { getAllUsers, GetAllUsers$Params } from '../fn/user/get-all-users';
 import { UserResponse } from '../models/user-response';
+import { StrictHttpResponse } from '../strict-http-response';
 
 @Injectable({ providedIn: 'root' })
 export class UserService extends BaseService {
+  /** Path part for operation `getAllUsers()` */
+  static readonly GetAllUsersPath = '/users';
+
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
-
-  /** Path part for operation `getAllUsers()` */
-  static readonly GetAllUsersPath = '/users';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

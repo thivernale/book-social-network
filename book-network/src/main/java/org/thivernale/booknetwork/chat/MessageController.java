@@ -37,7 +37,7 @@ public class MessageController {
 
     @PatchMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    void getChannels(@RequestParam("channel-id") Long channelId, Authentication authentication) {
+    void markAsRead(@RequestParam("channel-id") Long channelId, Authentication authentication) {
         messageService.markAsRead(channelId, authentication);
     }
 

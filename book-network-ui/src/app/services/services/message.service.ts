@@ -5,29 +5,31 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ApiConfiguration } from '../api-configuration';
 
 import { BaseService } from '../base-service';
-import { ApiConfiguration } from '../api-configuration';
-import { StrictHttpResponse } from '../strict-http-response';
 
-import { createMediaMessage } from '../fn/message/create-media-message';
-import { CreateMediaMessage$Params } from '../fn/message/create-media-message';
-import { createMessage } from '../fn/message/create-message';
-import { CreateMessage$Params } from '../fn/message/create-message';
-import { getChannels } from '../fn/message/get-channels';
-import { GetChannels$Params } from '../fn/message/get-channels';
-import { getMessages } from '../fn/message/get-messages';
-import { GetMessages$Params } from '../fn/message/get-messages';
+import { createMediaMessage, CreateMediaMessage$Params } from '../fn/message/create-media-message';
+import { createMessage, CreateMessage$Params } from '../fn/message/create-message';
+import { getMessages, GetMessages$Params } from '../fn/message/get-messages';
+import { markAsRead, MarkAsRead$Params } from '../fn/message/mark-as-read';
 import { MessageResponse } from '../models/message-response';
+import { StrictHttpResponse } from '../strict-http-response';
 
 @Injectable({ providedIn: 'root' })
 export class MessageService extends BaseService {
+  /** Path part for operation `createMessage()` */
+  static readonly CreateMessagePath = '/messages';
+  /** Path part for operation `markAsRead()` */
+  static readonly MarkAsReadPath = '/messages';
+  /** Path part for operation `createMediaMessage()` */
+  static readonly CreateMediaMessagePath = '/messages/upload-media';
+  /** Path part for operation `getMessages()` */
+  static readonly GetMessagesPath = '/messages/channel/{channel-id}';
+
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
-
-  /** Path part for operation `createMessage()` */
-  static readonly CreateMessagePath = '/messages';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -53,35 +55,29 @@ export class MessageService extends BaseService {
     );
   }
 
-  /** Path part for operation `getChannels()` */
-  static readonly GetChannelsPath = '/messages';
-
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getChannels()` instead.
+   * To access only the response body, use `markAsRead()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getChannels$Response(params: GetChannels$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    const obs = getChannels(this.http, this.rootUrl, params, context);
+  markAsRead$Response(params: MarkAsRead$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    const obs = markAsRead(this.http, this.rootUrl, params, context);
     return obs;
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getChannels$Response()` instead.
+   * To access the full response (for headers, for example), `markAsRead$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getChannels(params: GetChannels$Params, context?: HttpContext): Observable<void> {
-    const resp = this.getChannels$Response(params, context);
+  markAsRead(params: MarkAsRead$Params, context?: HttpContext): Observable<void> {
+    const resp = this.markAsRead$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
-
-  /** Path part for operation `createMediaMessage()` */
-  static readonly CreateMediaMessagePath = '/messages/upload-media';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -106,9 +102,6 @@ export class MessageService extends BaseService {
       map((r: StrictHttpResponse<void>): void => r.body)
     );
   }
-
-  /** Path part for operation `getMessages()` */
-  static readonly GetMessagesPath = '/messages/channel/{channel-id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

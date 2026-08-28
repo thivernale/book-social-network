@@ -4,16 +4,16 @@
 import { HttpClient, HttpContext, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
+import { StrictHttpResponse } from '../../strict-http-response';
 
 
-export interface GetChannels$Params {
+export interface MarkAsRead$Params {
   'channel-id': number;
 }
 
-export function getChannels(http: HttpClient, rootUrl: string, params: GetChannels$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, getChannels.PATH, 'patch');
+export function markAsRead(http: HttpClient, rootUrl: string, params: MarkAsRead$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, markAsRead.PATH, 'patch');
   if (params) {
     rb.query('channel-id', params['channel-id'], {});
   }
@@ -28,4 +28,4 @@ export function getChannels(http: HttpClient, rootUrl: string, params: GetChanne
   );
 }
 
-getChannels.PATH = '/messages';
+markAsRead.PATH = '/messages';

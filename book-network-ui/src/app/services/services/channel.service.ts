@@ -5,52 +5,49 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ApiConfiguration } from '../api-configuration';
 
 import { BaseService } from '../base-service';
-import { ApiConfiguration } from '../api-configuration';
-import { StrictHttpResponse } from '../strict-http-response';
+import { createChannel, CreateChannel$Params } from '../fn/channel/create-channel';
+import { getChannels, GetChannels$Params } from '../fn/channel/get-channels';
 
 import { ChannelResponse } from '../models/channel-response';
-import { createChannel } from '../fn/channel/create-channel';
-import { CreateChannel$Params } from '../fn/channel/create-channel';
-import { getChannels1 } from '../fn/channel/get-channels-1';
-import { GetChannels1$Params } from '../fn/channel/get-channels-1';
+import { StrictHttpResponse } from '../strict-http-response';
 
 @Injectable({ providedIn: 'root' })
 export class ChannelService extends BaseService {
+  /** Path part for operation `getChannels()` */
+  static readonly GetChannelsPath = '/channels';
+  /** Path part for operation `createChannel()` */
+  static readonly CreateChannelPath = '/channels';
+
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
 
-  /** Path part for operation `getChannels1()` */
-  static readonly GetChannels1Path = '/channels';
-
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getChannels1()` instead.
+   * To access only the response body, use `getChannels()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getChannels1$Response(params?: GetChannels1$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ChannelResponse>>> {
-    const obs = getChannels1(this.http, this.rootUrl, params, context);
+  getChannels$Response(params?: GetChannels$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<ChannelResponse>>> {
+    const obs = getChannels(this.http, this.rootUrl, params, context);
     return obs;
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getChannels1$Response()` instead.
+   * To access the full response (for headers, for example), `getChannels$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getChannels1(params?: GetChannels1$Params, context?: HttpContext): Observable<Array<ChannelResponse>> {
-    const resp = this.getChannels1$Response(params, context);
+  getChannels(params?: GetChannels$Params, context?: HttpContext): Observable<Array<ChannelResponse>> {
+    const resp = this.getChannels$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<Array<ChannelResponse>>): Array<ChannelResponse> => r.body)
     );
   }
-
-  /** Path part for operation `createChannel()` */
-  static readonly CreateChannelPath = '/channels';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

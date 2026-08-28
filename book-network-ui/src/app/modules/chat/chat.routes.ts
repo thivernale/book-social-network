@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { ChatListComponent } from './pages/chat-list/chat-list.component';
+import { ChatComponent } from './pages/chat/chat.component';
 
 export const CHAT_ROUTES: Routes = [
-  { path: '', component: ChatListComponent, }
+  { path: '', component: ChatComponent, }
 ];

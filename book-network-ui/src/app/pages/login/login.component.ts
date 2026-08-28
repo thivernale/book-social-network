@@ -13,12 +13,11 @@ import { TokenService } from '../../token/token.service';
   standalone: true,
 })
 export class LoginComponent {
+  protected authRequest: AuthenticationRequest = { email: '', password: '' };
+  protected errorMsg: string[] = [];
   private router = inject(Router);
   private authService = inject(AuthenticationService);
   private tokenService = inject(TokenService);
-
-  protected authRequest: AuthenticationRequest = { email: '', password: '' };
-  protected errorMsg: string[] = [];
 
   protected login() {
     this.errorMsg = [];

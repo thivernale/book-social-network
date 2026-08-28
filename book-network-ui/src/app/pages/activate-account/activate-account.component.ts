@@ -11,13 +11,12 @@ import { AuthenticationService } from '../../services/services/authentication.se
   standalone: true,
 })
 export class ActivateAccountComponent {
-  private router = inject(Router);
-  private authService = inject(AuthenticationService);
-
   protected readonly codeLength = 6 as const;
   protected isSubmitted = false;
   protected isSuccess = false;
   protected message = '';
+  private router = inject(Router);
+  private authService = inject(AuthenticationService);
 
   protected onCodeCompleted(token: string) {
     this.authService.confirm({ token }).subscribe({

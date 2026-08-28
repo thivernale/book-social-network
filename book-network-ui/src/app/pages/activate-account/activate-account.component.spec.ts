@@ -1,10 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
+import { AuthenticationService } from '../../services/services';
 
 import { ActivateAccountComponent } from './activate-account.component';
-import { AuthenticationService } from '../../services/services';
 
 describe('ActivateAccountComponent', () => {
   let component: ActivateAccountComponent;

@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RegistrationRequest } from '../../services/models/registration-request';
 
 import { AuthenticationService } from '../../services/services/authentication.service';
-import { RegistrationRequest } from '../../services/models/registration-request';
 
 @Component({
   selector: 'app-register',
@@ -12,9 +12,6 @@ import { RegistrationRequest } from '../../services/models/registration-request'
   standalone: true,
 })
 export class RegisterComponent {
-  private router = inject(Router);
-  private authService = inject(AuthenticationService);
-
   protected regRequest: RegistrationRequest = {
     firstname: '',
     lastname: '',
@@ -22,6 +19,8 @@ export class RegisterComponent {
     password: '',
   };
   protected errorMsg: string[] = [];
+  private router = inject(Router);
+  private authService = inject(AuthenticationService);
 
   protected async register() {
     this.errorMsg = [];

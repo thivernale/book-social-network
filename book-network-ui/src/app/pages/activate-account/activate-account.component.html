@@ -8,7 +8,7 @@
     } @else {
       <div class="text-center">
         <h2>Activation failed</h2>
-        <p class="text-danger">{{message}}</p>
+        <p class="text-danger">{{ message }}</p>
         <button (click)="isSubmitted = false" class="btn btn-primary" type="button">Try again</button>
       </div>
     }
@@ -18,7 +18,7 @@
     <div class="text-center w-50">
       <h2>Enter your activation code</h2>
       <code-input (codeCompleted)="onCodeCompleted($event)" [codeLength]="codeLength" [code]="'number'"
-        [initialFocusField]="0" [isCodeHidden]="false" />
+                  [initialFocusField]="0" [isCodeHidden]="false"/>
     </div>
   </div>
 }

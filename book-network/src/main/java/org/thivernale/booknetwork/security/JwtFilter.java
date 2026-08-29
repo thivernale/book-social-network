@@ -15,8 +15,11 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.thivernale.booknetwork.user.User;
+import org.thivernale.booknetwork.user.UserRepository;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     /**
      * Requests that should not be filtered by this filter.
@@ -59,6 +63,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext()
                     .setAuthentication(authenticationToken);
+
+                // update last online time
+                if (userDetails instanceof User user && !user.isOnline()) {
+                    user.setLastOnline(LocalDateTime.now());
+                    userRepository.save(user);
+                }
             }
         }
 

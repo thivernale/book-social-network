@@ -1,9 +1,12 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, input, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { NEVER, switchMap, timer } from 'rxjs';
 import { ChannelResponse } from '../../../../services/models/channel-response';
 import { UserResponse } from '../../../../services/models/user-response';
 import { UserService } from '../../../../services/services';
+
+const CONTACTS_REFRESH_INTERVAL = 60 * 1_000;
 
 @Component({
   selector: 'app-channel-list',
@@ -14,15 +17,25 @@ import { UserService } from '../../../../services/services';
 })
 export class ChannelListComponent {
   channelsInput = input.required<ChannelResponse[]>();
-  protected inSearch = signal(false);
+  protected readonly inSearch = signal(false);
   private readonly userService = inject(UserService);
-  protected readonly users = toSignal(this.userService.getAllUsers(), { initialValue: [] });
+  protected readonly refreshingUsers$ = toObservable(this.inSearch).pipe(
+    switchMap(inSearch => {
+      if (!inSearch) {
+        return NEVER;
+      }
+      return timer(0, CONTACTS_REFRESH_INTERVAL).pipe(
+        switchMap(() => this.userService.getAllUsers())
+      );
+    })
+  );
+  protected readonly users = toSignal(this.refreshingUsers$, { initialValue: [] });
 
   protected searchContact() {
     this.inSearch.set(true);
   }
 
-  protected channelSelected(channel: ChannelResponse) {
+  protected setChannelSelected(selectedChannel: ChannelResponse) {
 
   }
 
@@ -33,7 +46,14 @@ export class ChannelListComponent {
     return lastMessageContent ?? '';
   }
 
-  protected contactSelected(contact: UserResponse) {
+  protected contactSelected(selectedUser: UserResponse) {
 
+  }
+
+  protected calculateMinutesAway(lastOnline: string | undefined): number {
+    if (!lastOnline) {
+      return 0;
+    }
+    return Math.floor((Date.now() - Date.parse(lastOnline)) / 1000 / 60);
   }
 }

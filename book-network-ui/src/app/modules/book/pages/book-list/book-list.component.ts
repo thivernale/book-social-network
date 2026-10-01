@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { BookResponse } from '../../../../services/models/book-response';
 import { PageResponseBookResponse } from '../../../../services/models/page-response-book-response';
@@ -14,11 +15,14 @@ import { PaginationComponent } from '../../components/pagination/pagination.comp
   standalone: true,
 })
 export class BookListComponent implements OnInit {
+  private bookService = inject(BookService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private toastrService = inject(ToastrService);
+
   protected bookResponse: PageResponseBookResponse = {};
   protected page = 0;
   protected size = 5;
-  private bookService = inject(BookService);
-  private toastrService = inject(ToastrService);
 
   ngOnInit(): void {
     this.findAllBooks();
@@ -49,9 +53,8 @@ export class BookListComponent implements OnInit {
     });
   }
 
-  protected showBookDetails($event: BookResponse) {
-    console.log($event);
-    throw new Error('Method not implemented.');
+  protected async showBookDetails(book: BookResponse) {
+    await this.router.navigate([book.id], { relativeTo: this.route });
   }
 
   protected addBookToWaitingList($event: BookResponse) {

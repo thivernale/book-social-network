@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { JwtHelperService } from '@auth0/angular-jwt';
 import { IMessage } from '@stomp/rx-stomp';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
@@ -31,8 +30,7 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (this.tokenService.token) {
-      const jwtHelper = new JwtHelperService();
-      const decodeToken = jwtHelper.decodeToken<{ fullName: string, id: string }>(this.tokenService.token);
+      const decodeToken = this.tokenService.decodeToken<{ fullName: string, id: number }>();
       this.username.set(decodeToken?.fullName ?? '');
       const userId = decodeToken?.id ?? '';
 

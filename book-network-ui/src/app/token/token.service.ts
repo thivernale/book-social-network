@@ -26,4 +26,14 @@ export class TokenService {
     }
     return !tokenExpired;
   }
+
+  decodeToken<T>(): T | null {
+    console.log('decodeToken:');
+    const token = this.token;
+    if (!token) {
+      return null;
+    }
+    const jwtHelper = new JwtHelperService();
+    return jwtHelper.decodeToken(token);
+  }
 }

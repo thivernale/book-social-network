@@ -87,16 +87,14 @@
               @if (contact.isOnline) {
                 @let minutesAway = calculateMinutesAway(contact.lastOnline);
                 @if (minutesAway >= 5) {
-                  <span
-                    class="badge border border-light rounded-circle bg-warning p-1">
-                  <span class="visually-hidden">New alerts</span>
-                </span>
+                  <span class="badge border border-light rounded-circle bg-warning p-1">
+                    <span class="visually-hidden"></span>
+                  </span>
                   Away ({{ minutesAway }} minutes)
                 } @else {
-                  <span
-                    class="badge border border-light rounded-circle bg-success p-1">
-                  <span class="visually-hidden">New alerts</span>
-                </span>
+                  <span class="badge border border-light rounded-circle bg-success p-1">
+                    <span class="visually-hidden"></span>
+                  </span>
                   Online
                 }
               } @else {

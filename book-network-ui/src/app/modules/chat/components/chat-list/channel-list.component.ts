@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, inject, input, output, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NEVER, switchMap, timer } from 'rxjs';
 import { ChannelResponse } from '../../../../services/models/channel-response';
@@ -17,6 +17,7 @@ const CONTACTS_REFRESH_INTERVAL = 60 * 1_000;
 })
 export class ChannelListComponent {
   channelsInput = input.required<ChannelResponse[]>();
+  channelSelected = output<ChannelResponse>();
   protected readonly inSearch = signal(false);
   private readonly userService = inject(UserService);
   protected readonly refreshingUsers$ = toObservable(this.inSearch).pipe(
@@ -36,7 +37,7 @@ export class ChannelListComponent {
   }
 
   protected setChannelSelected(selectedChannel: ChannelResponse) {
-
+    this.channelSelected.emit(selectedChannel);
   }
 
   protected truncateText(lastMessageContent: string | undefined, maxLength = 20) {

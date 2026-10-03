@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @use 'ngx-toastr/toastr';
+@use "@ctrl/ngx-emoji-mart/picker.css";
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 

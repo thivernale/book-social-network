@@ -16,5 +16,5 @@ interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query(name = MessageConstants.UPDATE_MESSAGES_STATUS_BY_CHANNEL_AND_RECIPIENT)
     @Modifying
-    long updateStatusByChannel(@Param("channelId") Long channelId, @Param("status") MessageStatus status);
+    int updateStatusByChannel(@Param("channelId") Long channelId, @Param("status") MessageStatus status);
 }

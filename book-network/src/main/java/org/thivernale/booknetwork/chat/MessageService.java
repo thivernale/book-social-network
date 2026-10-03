@@ -57,7 +57,7 @@ class MessageService {
     void markAsRead(Long channelId, Authentication authentication) {
         channelRepository.findById(channelId)
             .map((Channel channel) -> {
-                long updated = messageRepository.updateStatusByChannel(channelId, MessageStatus.READ);
+                int updated = messageRepository.updateStatusByChannel(channelId, MessageStatus.READ);
 
                 // add notification to the other participant for read messages
                 Long recipientId = getRecipientId(channel, authentication);

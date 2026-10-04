@@ -17,7 +17,8 @@ const CONTACTS_REFRESH_INTERVAL = 60 * 1_000;
 })
 export class ChannelListComponent {
   channelsInput = input.required<ChannelResponse[]>();
-  channelSelected = output<ChannelResponse>();
+  channelSelected = output<ChannelResponse | undefined>();
+  currentChannel = signal<ChannelResponse | undefined>(undefined);
   protected readonly inSearch = signal(false);
   private readonly userService = inject(UserService);
   protected readonly refreshingUsers$ = toObservable(this.inSearch).pipe(
@@ -37,7 +38,8 @@ export class ChannelListComponent {
   }
 
   protected setChannelSelected(selectedChannel: ChannelResponse) {
-    this.channelSelected.emit(selectedChannel);
+    this.currentChannel.update(oldValue => oldValue?.id === selectedChannel.id ? undefined : selectedChannel);
+    this.channelSelected.emit(this.currentChannel());
   }
 
   protected truncateText(lastMessageContent: string | undefined, maxLength = 20) {

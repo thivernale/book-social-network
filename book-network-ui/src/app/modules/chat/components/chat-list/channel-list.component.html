@@ -42,6 +42,7 @@
            class="d-flex align-items-center justify-content-between border-bottom border-secondary-subtle list-group-item list-group-item-action"
            role="button"
            tabindex="0"
+           [class.bg-secondary-subtle]="currentChannel()?.id === channel.id"
       >
         <div class="d-flex gap-2 align-items-center">
           <div>
@@ -78,7 +79,6 @@
            tabindex="0"
       >
         <div class="d-flex gap-2 align-items-center">
-          <!--          <img alt="" src="">-->
           <i class="fas fa-user fs-3"></i>
           <div class="d-flex flex-column">
             <span class="fw-semibold">{{ contact.firstname + ' ' + contact.lastname }}</span>

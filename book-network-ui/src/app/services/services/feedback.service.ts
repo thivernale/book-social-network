@@ -5,25 +5,25 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiConfiguration } from '../api-configuration';
 
 import { BaseService } from '../base-service';
-
-import { findAllFeedbacksOfBook, FindAllFeedbacksOfBook$Params } from '../fn/feedback/find-all-feedbacks-of-book';
-import { saveFeedback, SaveFeedback$Params } from '../fn/feedback/save-feedback';
-import { PageResponseFeedbackResponse } from '../models/page-response-feedback-response';
+import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
+
+import { findAllFeedbacksOfBook } from '../fn/feedback/find-all-feedbacks-of-book';
+import { FindAllFeedbacksOfBook$Params } from '../fn/feedback/find-all-feedbacks-of-book';
+import { PageResponseFeedbackResponse } from '../models/page-response-feedback-response';
+import { saveFeedback } from '../fn/feedback/save-feedback';
+import { SaveFeedback$Params } from '../fn/feedback/save-feedback';
 
 @Injectable({ providedIn: 'root' })
 export class FeedbackService extends BaseService {
-  /** Path part for operation `saveFeedback()` */
-  static readonly SaveFeedbackPath = '/feedbacks';
-  /** Path part for operation `findAllFeedbacksOfBook()` */
-  static readonly FindAllFeedbacksOfBookPath = '/feedbacks/book/{book-id}';
-
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
+
+  /** Path part for operation `saveFeedback()` */
+  static readonly SaveFeedbackPath = '/feedbacks';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -48,6 +48,9 @@ export class FeedbackService extends BaseService {
       map((r: StrictHttpResponse<number>): number => r.body)
     );
   }
+
+  /** Path part for operation `findAllFeedbacksOfBook()` */
+  static readonly FindAllFeedbacksOfBookPath = '/feedbacks/book/{book-id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

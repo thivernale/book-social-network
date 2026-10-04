@@ -17,16 +17,12 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends BaseService {
-  /** Path part for operation `register()` */
-  static readonly RegisterPath = '/auth/register';
-  /** Path part for operation `authenticate()` */
-  static readonly AuthenticatePath = '/auth/authenticate';
-  /** Path part for operation `confirm()` */
-  static readonly ConfirmPath = '/auth/activate-account';
-
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
+
+  /** Path part for operation `register()` */
+  static readonly RegisterPath = '/auth/register';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -52,6 +48,9 @@ export class AuthenticationService extends BaseService {
     );
   }
 
+  /** Path part for operation `authenticate()` */
+  static readonly AuthenticatePath = '/auth/authenticate';
+
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `authenticate()` instead.
@@ -75,6 +74,9 @@ export class AuthenticationService extends BaseService {
       map((r: StrictHttpResponse<AuthenticationResponse>): AuthenticationResponse => r.body)
     );
   }
+
+  /** Path part for operation `confirm()` */
+  static readonly ConfirmPath = '/auth/activate-account';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

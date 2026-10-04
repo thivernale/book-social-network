@@ -28,34 +28,12 @@ import { StrictHttpResponse } from '../strict-http-response';
 
 @Injectable({ providedIn: 'root' })
 export class BookService extends BaseService {
-  /** Path part for operation `findAllBooks()` */
-  static readonly FindAllBooksPath = '/books';
-  /** Path part for operation `saveBook()` */
-  static readonly SaveBookPath = '/books';
-  /** Path part for operation `uploadBookCover()` */
-  static readonly UploadBookCoverPath = '/books/cover/{book-id}';
-  /** Path part for operation `borrowBook()` */
-  static readonly BorrowBookPath = '/books/borrow/{book-id}';
-  /** Path part for operation `updateShareableStatus()` */
-  static readonly UpdateShareableStatusPath = '/books/shareable/{book-id}';
-  /** Path part for operation `returnBorrowedBook()` */
-  static readonly ReturnBorrowedBookPath = '/books/borrow/return/{book-id}';
-  /** Path part for operation `approveReturnBorrowedBook()` */
-  static readonly ApproveReturnBorrowedBookPath = '/books/borrow/return/approve/{book-id}';
-  /** Path part for operation `updateArchivedStatus()` */
-  static readonly UpdateArchivedStatusPath = '/books/archived/{book-id}';
-  /** Path part for operation `findBookById()` */
-  static readonly FindBookByIdPath = '/books/{book-id}';
-  /** Path part for operation `findAllReturnedBooks()` */
-  static readonly FindAllReturnedBooksPath = '/books/returned';
-  /** Path part for operation `findAllBooksOfOwner()` */
-  static readonly FindAllBooksOfOwnerPath = '/books/owner';
-  /** Path part for operation `findAllBorrowedBooks()` */
-  static readonly FindAllBorrowedBooksPath = '/books/borrowed';
-
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
+
+  /** Path part for operation `findAllBooks()` */
+  static readonly FindAllBooksPath = '/books';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -81,6 +59,9 @@ export class BookService extends BaseService {
     );
   }
 
+  /** Path part for operation `saveBook()` */
+  static readonly SaveBookPath = '/books';
+
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `saveBook()` instead.
@@ -104,6 +85,9 @@ export class BookService extends BaseService {
       map((r: StrictHttpResponse<number>): number => r.body)
     );
   }
+
+  /** Path part for operation `uploadBookCover()` */
+  static readonly UploadBookCoverPath = '/books/cover/{book-id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -129,6 +113,9 @@ export class BookService extends BaseService {
     );
   }
 
+  /** Path part for operation `borrowBook()` */
+  static readonly BorrowBookPath = '/books/borrow/{book-id}';
+
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `borrowBook()` instead.
@@ -152,6 +139,9 @@ export class BookService extends BaseService {
       map((r: StrictHttpResponse<number>): number => r.body)
     );
   }
+
+  /** Path part for operation `updateShareableStatus()` */
+  static readonly UpdateShareableStatusPath = '/books/shareable/{book-id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -177,6 +167,9 @@ export class BookService extends BaseService {
     );
   }
 
+  /** Path part for operation `returnBorrowedBook()` */
+  static readonly ReturnBorrowedBookPath = '/books/borrow/return/{book-id}';
+
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `returnBorrowedBook()` instead.
@@ -200,6 +193,9 @@ export class BookService extends BaseService {
       map((r: StrictHttpResponse<number>): number => r.body)
     );
   }
+
+  /** Path part for operation `approveReturnBorrowedBook()` */
+  static readonly ApproveReturnBorrowedBookPath = '/books/borrow/return/approve/{book-id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -225,6 +221,9 @@ export class BookService extends BaseService {
     );
   }
 
+  /** Path part for operation `updateArchivedStatus()` */
+  static readonly UpdateArchivedStatusPath = '/books/archived/{book-id}';
+
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `updateArchivedStatus()` instead.
@@ -248,6 +247,9 @@ export class BookService extends BaseService {
       map((r: StrictHttpResponse<number>): number => r.body)
     );
   }
+
+  /** Path part for operation `findBookById()` */
+  static readonly FindBookByIdPath = '/books/{book-id}';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -273,6 +275,9 @@ export class BookService extends BaseService {
     );
   }
 
+  /** Path part for operation `findAllReturnedBooks()` */
+  static readonly FindAllReturnedBooksPath = '/books/returned';
+
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `findAllReturnedBooks()` instead.
@@ -297,6 +302,9 @@ export class BookService extends BaseService {
     );
   }
 
+  /** Path part for operation `findAllBooksOfOwner()` */
+  static readonly FindAllBooksOfOwnerPath = '/books/owner';
+
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `findAllBooksOfOwner()` instead.
@@ -320,6 +328,9 @@ export class BookService extends BaseService {
       map((r: StrictHttpResponse<PageResponseBookResponse>): PageResponseBookResponse => r.body)
     );
   }
+
+  /** Path part for operation `findAllBorrowedBooks()` */
+  static readonly FindAllBorrowedBooksPath = '/books/borrowed';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

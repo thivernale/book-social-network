@@ -21,8 +21,9 @@ public class MessageController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    void createMessage(@RequestBody MessageRequest messageRequest) {
-        messageService.create(messageRequest);
+    ResponseEntity<Long> createMessage(@RequestBody MessageRequest messageRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(messageService.create(messageRequest));
     }
 
     @PostMapping(path = "/upload-media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

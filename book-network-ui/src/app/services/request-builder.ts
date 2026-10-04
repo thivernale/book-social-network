@@ -211,11 +211,11 @@ class HeaderParameter extends Parameter {
  */
 export class RequestBuilder {
 
-  _bodyContent: any | null;
-  _bodyContentType?: string;
   private _path = new Map<string, PathParameter>();
   private _query = new Map<string, QueryParameter>();
   private _header = new Map<string, HeaderParameter>();
+  _bodyContent: any | null;
+  _bodyContentType?: string;
 
   constructor(
     public rootUrl: string,
@@ -297,6 +297,19 @@ export class RequestBuilder {
     }
   }
 
+  private formDataValue(value: any): any {
+    if (value === null || value === undefined) {
+      return null;
+    }
+    if (value instanceof Blob) {
+      return value;
+    }
+    if (typeof value === 'object') {
+      return new Blob([JSON.stringify(value)], { type: 'application/json' });
+    }
+    return String(value);
+  }
+
   /**
    * Builds the request with the current set parameters
    */
@@ -353,18 +366,5 @@ export class RequestBuilder {
       reportProgress: options.reportProgress,
       context: options.context
     });
-  }
-
-  private formDataValue(value: any): any {
-    if (value === null || value === undefined) {
-      return null;
-    }
-    if (value instanceof Blob) {
-      return value;
-    }
-    if (typeof value === 'object') {
-      return new Blob([JSON.stringify(value)], { type: 'application/json' });
-    }
-    return String(value);
   }
 }

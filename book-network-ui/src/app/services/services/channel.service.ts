@@ -5,25 +5,25 @@ import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ApiConfiguration } from '../api-configuration';
 
 import { BaseService } from '../base-service';
-import { createChannel, CreateChannel$Params } from '../fn/channel/create-channel';
-import { getChannels, GetChannels$Params } from '../fn/channel/get-channels';
+import { ApiConfiguration } from '../api-configuration';
+import { StrictHttpResponse } from '../strict-http-response';
 
 import { ChannelResponse } from '../models/channel-response';
-import { StrictHttpResponse } from '../strict-http-response';
+import { createChannel } from '../fn/channel/create-channel';
+import { CreateChannel$Params } from '../fn/channel/create-channel';
+import { getChannels } from '../fn/channel/get-channels';
+import { GetChannels$Params } from '../fn/channel/get-channels';
 
 @Injectable({ providedIn: 'root' })
 export class ChannelService extends BaseService {
-  /** Path part for operation `getChannels()` */
-  static readonly GetChannelsPath = '/channels';
-  /** Path part for operation `createChannel()` */
-  static readonly CreateChannelPath = '/channels';
-
   constructor(config: ApiConfiguration, http: HttpClient) {
     super(config, http);
   }
+
+  /** Path part for operation `getChannels()` */
+  static readonly GetChannelsPath = '/channels';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
@@ -48,6 +48,9 @@ export class ChannelService extends BaseService {
       map((r: StrictHttpResponse<Array<ChannelResponse>>): Array<ChannelResponse> => r.body)
     );
   }
+
+  /** Path part for operation `createChannel()` */
+  static readonly CreateChannelPath = '/channels';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.

@@ -32,7 +32,7 @@ class MessageService {
             .toList();
     }
 
-    void create(MessageRequest messageRequest) {
+    Long create(MessageRequest messageRequest) {
         var existingChannel = channelRepository.findById(messageRequest.channelId())
             .orElseThrow(() -> new EntityNotFoundException("Channel with id %d not found".formatted(messageRequest.channelId())));
 
@@ -52,6 +52,8 @@ class MessageService {
             String.valueOf(messageRequest.recipientId()),
             messageMapper.mapToChatNotification(message)
         );
+
+        return message.getId();
     }
 
     void markAsRead(Long channelId, Authentication authentication) {

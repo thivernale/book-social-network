@@ -5,5 +5,5 @@
   "module": false,
   "services": true,
   "promises": false,
-  "endOfLineStyle": "LF"
+  "endOfLineStyle": "lf"
 }

@@ -1,13 +1,13 @@
 import { DatePipe, NgClass } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import { Observable, of, switchMap } from 'rxjs';
 import { ChannelResponse } from '../../../../services/models/channel-response';
 import { MessageResponse } from '../../../../services/models/message-response';
-import { ChannelService, MessageService } from '../../../../services/services';
+import { MessageService } from '../../../../services/services';
 import { TokenService } from '../../../../token/token.service';
 import { ChannelListComponent } from '../../components/chat-list/channel-list.component';
 
@@ -23,11 +23,9 @@ import { ChannelListComponent } from '../../components/chat-list/channel-list.co
 })
 export class ChatComponent {
   private tokenService = inject(TokenService);
-  private currentUserId = signal<number | undefined>(this.tokenService.decodeToken<{ id: number }>()?.id);
-  private readonly channelService = inject(ChannelService);
-  // TODO we need refreshable and updatable channels
-  protected channels = toSignal(this.channelService.getChannels(), { initialValue: [] });
   private readonly messageService = inject(MessageService);
+
+  protected currentUserId = signal<number | undefined>(this.tokenService.decodeToken<{ id: number }>()?.id);
   protected selectedChannel = signal<ChannelResponse | undefined>(undefined);
   // Convert the params to an Observable, switchMap to generated backend method, and convert back to a Signal
   //protected messages = toSignal(this.prepareMessagesObservable(), { initialValue: [] });
@@ -63,7 +61,6 @@ export class ChatComponent {
     this.selectedChannel.set(selectedChannel);
 
     if (selectedChannel?.unreadCount) {
-      console.log(selectedChannel);
       this.markChannelAsRead();
     }
   }
@@ -84,7 +81,6 @@ export class ChatComponent {
             channel.unreadCount = 0;
           }
           return channel;
-
         });
       }
     });

@@ -15,8 +15,9 @@
     <div class="d-flex w-100">
       <div class="col-md-6 col-xl-3 overflow-x-scroll">
         <app-channel-list
-          (channelSelected)="handleChannelSelected($event)"
-          [channelsInput]="channels()"/>
+          (selectedChannelEmitter)="handleChannelSelected($event)"
+          [currentUserId]="currentUserId()"
+        />
       </div>
 
       @if (selectedChannel(); as sel) {

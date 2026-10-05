@@ -35,9 +35,9 @@
 </div>
 
 <div class="mt-3 list-group">
-  @if (channelsInput().length > 0 && !inSearch()) {
-    @for (channel of channelsInput(); track channel.id) {
-      <div (click)="setChannelSelected(channel)"
+  @if (writableChannels().length > 0 && !inSearch()) {
+    @for (channel of writableChannels(); track channel.id) {
+      <div (click)="setSelectedChannel(channel)"
            aria-label="Select channel"
            class="d-flex align-items-center justify-content-between border-bottom border-secondary-subtle list-group-item list-group-item-action"
            role="button"
@@ -72,7 +72,7 @@
     }
   } @else if (inSearch()) {
     @for (contact of users(); track contact.id) {
-      <div (click)="contactSelected(contact)"
+      <div (click)="setSelectedContact(contact)"
            aria-label="Select contact"
            class="d-flex align-items-center justify-content-between border-secondary-subtle border-bottom p-2 list-group-item list-group-item-action"
            role="button"
@@ -106,6 +106,6 @@
       </div>
     }
   } @else {
-    <span>No chats yet.</span>
+    <span class="px-3 text-secondary">No chats yet.</span>
   }
 </div>

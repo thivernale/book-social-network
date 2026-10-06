@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, effect, inject, input, output, signal } from '@angular/core';
+import { Component, DestroyRef, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, EMPTY, exhaustMap, NEVER, switchMap, tap, timer } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
@@ -22,11 +22,11 @@ export class ChannelListComponent {
   private readonly userService = inject(UserService);
 
   currentUserId = input.required<number | undefined>();
-  selectedChannelEmitter = output<ChannelResponse | undefined>();
+  channels = input.required<ChannelResponse[]>();
+  selectedChannelId = input<number | undefined>();
+  channelSelected = output<number | undefined>();
+  channelCreated = output<ChannelResponse>();
 
-  protected channels = toSignal(this.channelService.getChannels(), { initialValue: [] });
-  protected writableChannels = signal<ChannelResponse[]>([]);
-  currentChannel = signal<ChannelResponse | undefined>(undefined);
   protected readonly inSearch = signal(false);
 
   private readonly refreshingUsers$ = toObservable(this.inSearch).pipe(
@@ -69,46 +69,19 @@ export class ChannelListComponent {
     )),
     tap(channel => {
       // console.log('Channel created:', channel);
-      this.setSelectedChannel(channel);
+      this.channelCreated.emit(channel);
       this.inSearch.set(false);
     }),
     takeUntilDestroyed(this.destroyRef)
   );
   private readonly createChannel = toSignal(this.createChannel$, { initialValue: undefined });
 
-  constructor() {
-    effect(() => {
-      this.writableChannels.set(this.channels());
-    });
-  }
-
   protected searchContact() {
     this.inSearch.set(true);
   }
 
   protected setSelectedChannel(selectedChannel: ChannelResponse) {
-    this.currentChannel.update(oldValue => oldValue?.id === selectedChannel.id ? undefined : selectedChannel);
-    this.selectedChannelEmitter.emit(this.currentChannel());
-
-    if (this.currentChannel()) {
-      this.writableChannels.update(
-        channels => {
-          const channelIndex = channels.findIndex(c => c.id === selectedChannel.id);
-          // set selected channel as first
-          if (channelIndex === -1) {
-            return [selectedChannel, ...channels];
-          } else if (channelIndex > 0) {
-            return [
-              channels[channelIndex],                // Placed at position 0
-              ...channels.slice(0, channelIndex),    // Everything that was before it
-              ...channels.slice(channelIndex + 1)    // Everything that was after it
-            ];
-          }
-          // already at position 0
-          return channels;
-        }
-      );
-    }
+    this.channelSelected.emit(selectedChannel.id);
   }
 
   protected truncateText(lastMessageContent: string | undefined, maxLength = 20) {

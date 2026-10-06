@@ -15,125 +15,22 @@
     <div class="d-flex w-100">
       <div class="col-md-6 col-xl-3 overflow-x-scroll">
         <app-channel-list
-          (selectedChannelEmitter)="handleChannelSelected($event)"
+          (channelSelected)="handleChannelSelected($event)"
+          (channelCreated)="handleChannelCreated($event)"
+          [channels]="channels()"
+          [selectedChannelId]="selectedChannelId()"
           [currentUserId]="currentUserId()"
         />
       </div>
 
       @if (selectedChannel(); as sel) {
         <div class="col-md-6 col-xl-9">
-          <div class="d-flex flex-column justify-content-between align-items-center h-100">
-            <div class="p-2 bg-secondary-subtle w-100 d-flex gap-2 align-items-center">
-              <div><i class="fas fa-user fs-3"></i></div>
-              <div class="d-flex flex-column">
-                <span class="fw-semibold">{{ sel.name }}</span>
-                <div class="d-flex gap-1 align-items-center">
-                  @if (sel.isRecipientOnline) {
-                    <span class="badge border border-light rounded-circle bg-success p-1">
-                      <span class="visually-hidden"></span>
-                    </span>
-                    <small>Online</small>
-                  } @else {
-                    <span class="badge border border-light rounded-circle bg-secondary p-1">
-                      <span class="visually-hidden"></span>
-                    </span>
-                    <small>Offline</small>
-                  }
-                </div>
-              </div>
-            </div>
-
-            <div #messagesDiv class="p-3 w-100 h-100 overflow-x-scroll d-flex flex-column bg-warning-subtle">
-              @for (message of messages(); track message.id; let i = $index) {
-                @if ($index === 0 || messages()[i - 1].createdAt?.substring(0, 10) !== message.createdAt?.substring(0, 10)) {
-                  <div class="fw-semibold py-2 small text-center">
-                    {{ message.createdAt | date : 'mediumDate' }}
-                  </div>
-                }
-                <div
-                  class="d-flex mw-50 p-2 rounded-2"
-                  [ngClass]="{
-                  'bg-info-subtle justify-content-end ms-auto text-end': isSentByCurrentUser(message),
-                  'bg-secondary-subtle justify-content-start me-auto text-start': !isSentByCurrentUser(message)
-                }">
-                  <div class="d-flex flex-column">
-                    @if (message.messageType === 'TEXT') {
-                      <span>{{ message.content }}</span>
-                    } @else if (message.media) {
-                      @if (message.messageType === 'IMAGE') {
-                        <img
-                          [alt]="message.content"
-                          [src]="'data:image/jpg;base64,' + message.media"
-                          class="cursor-pointer"
-                          width="200">
-                      } @else {
-                        TODO {{ message.messageType }}
-                      }
-                    }
-                    <small class="text-secondary">
-                      {{ message.createdAt | date : 'HH:mm:ss' }}
-                      @if (isSentByCurrentUser(message)) {
-                        <span>
-                        <i class="fas"
-                           [ngClass]="{
-                              'fa-check': message.messageStatus === 'SENT' || message.messageStatus === 'DELIVERED',
-                              'fa-check-double': message.messageStatus === 'READ'
-                            }"
-                        ></i>
-                      </span>
-                      } @else if (message.messageStatus !== 'READ') {
-                        <span class="badge border border-light rounded-circle bg-primary p-1">
-                          <span class="visually-hidden"></span>
-                        </span>
-                      }
-                    </small>
-                  </div>
-                </div>
-              }
-            </div>
-
-            <div class="bg-secondary-subtle p-2 w-100">
-              <div class="d-flex align-items-center gap-2">
-                <i class="fa fa-paperclip cursor-pointer" (click)="inputFile.click()" tabindex="0" role="button"></i>
-                <input
-                  #inputFile
-                  type="file"
-                  [hidden]="true"
-                  accept="image/*,audio/*,video/*"
-                  (change)="uploadMedia($event.target)"
-                  (cancel)="inputFile.value = ''"
-                >
-                <div>
-                  <i class="fa-regular fa-face-smile cursor-pointer" (click)="showEmojis.update(value => !value)"
-                     tabindex="0" role="button"></i>
-                  @if (showEmojis()) {
-                    <emoji-mart
-                      [set]="'google'"
-                      title="Pick an emoji"
-                      emoji="smile"
-                      class="position-absolute bottom-0 left-0 ms-1 mb-5"
-                      (emojiClick)="inputEmoji($event)"
-                    >
-                    </emoji-mart>
-                  }
-                </div>
-                <input
-                  type="text"
-                  class="form-control-sm w-100"
-                  placeholder="Type a message"
-                  [(ngModel)]="messageContent"
-                  (keydown)="handleMessageContentKeyDown($event)"
-                  (click)="handleMessageContentClick()"
-                >
-                @if (messageContent()) {
-                  <i class="far fa-paper-plane cursor-pointer" (click)="sendMessage()"
-                     tabindex="0" role="button"></i>
-                } @else {
-                  <i class="far fa-paper-plane text-secondary"></i>
-                }
-              </div>
-            </div>
-          </div>
+          <app-chat-screen
+            (messageSent)="handleMessageSent($event)"
+            (channelRead)="handleChannelRead($event)"
+            [selectedChannel]="sel"
+            [currentUserId]="currentUserId()"
+          />
         </div>
       } @else {
         <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100">

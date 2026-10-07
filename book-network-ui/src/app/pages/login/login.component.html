@@ -1,32 +1,35 @@
 <div class="container-fluid card login-container">
   <h3 class="text-center">Login</h3>
   <hr/>
-  @if (errorMsg.length) {
-    <div class="alert alert-danger" role="alert">
-      @for (msg of errorMsg; track msg) {
-        <p>{{ msg }}</p>
-      }
+  <form (ngSubmit)="login()" #form="ngForm">
+    @if (errorMsg.length) {
+      <div class="alert alert-danger" role="alert">
+        @for (msg of errorMsg; track msg) {
+          <p>{{ msg }}</p>
+        }
+      </div>
+    }
+    <div class="mb-3">
+      <label class="form-label" for="login">Email address</label>
+      <input [(ngModel)]="authRequest.email" class="form-control" name="login" id="login" placeholder="name@example.com"
+             type="email" required/>
     </div>
-  }
-  <div class="mb-3">
-    <label class="form-label" for="login">Email address</label>
-    <input [(ngModel)]="authRequest.email" class="form-control" id="login" placeholder="name@example.com"
-           type="email"/>
-  </div>
-  <div class="mb-3">
-    <label class="form-label" for="password">Password</label>
-    <input [(ngModel)]="authRequest.password" class="form-control" id="password" placeholder="Password"
-           type="password"/>
-  </div>
-  <div class="d-flex justify-content-between mb-3">
-    <button (click)="login()" class="btn btn-primary" type="button">
-      <em class="fas fa-sign-in-alt"></em>&nbsp;Sign in
-    </button>
-    <div class="align-bottom">
-      Don't have an account?&nbsp;
-      <button (click)="register()" class="btn btn-link" type="button">
-        Register
+    <div class="mb-3">
+      <label class="form-label" for="password">Password</label>
+      <input [(ngModel)]="authRequest.password" class="form-control" name="password" id="password"
+             placeholder="Password"
+             type="password" required/>
+    </div>
+    <div class="d-flex justify-content-between mb-3">
+      <button class="btn btn-primary" type="submit" [disabled]="form.invalid">
+        <em class="fas fa-sign-in-alt"></em>&nbsp;Sign in
       </button>
+      <div class="align-bottom">
+        Don't have an account?&nbsp;
+        <button (click)="register()" class="btn btn-link" type="button">
+          Register
+        </button>
+      </div>
     </div>
-  </div>
+  </form>
 </div>

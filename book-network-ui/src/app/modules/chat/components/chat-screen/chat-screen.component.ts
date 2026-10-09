@@ -1,9 +1,21 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  output,
+  signal,
+  untracked,
+  ViewChild
+} from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { EmojiEvent } from '@ctrl/ngx-emoji-mart/ngx-emoji';
+import { ToastrService } from 'ngx-toastr';
 import { Observable, of, switchMap } from 'rxjs';
 import { ChannelResponse } from '../../../../services/models/channel-response';
 import { MessageResponse } from '../../../../services/models/message-response';
@@ -30,9 +42,13 @@ export class ChatScreenComponent {
   private readonly messageService = inject(MessageService);
   protected readonly messages = signal<MessageResponse[]>([]);
   protected readonly showEmojis = signal(false);
-  protected readonly messageContent = signal('');
+  protected messageContent = signal('');
   // Primitive value, so patching channel metadata (last message, unread count) does not refetch the messages
   private readonly selectedChannelId = computed(() => this.selectedChannel()?.id);
+
+  @ViewChild('messagesDiv') protected messagesDiv!: ElementRef<HTMLDivElement>;
+
+  private toastrService = inject(ToastrService);
 
   constructor() {
     // mark as read when a channel with unread messages is opened
@@ -52,6 +68,27 @@ export class ChatScreenComponent {
         this.messages.set(messages);
       }
     });
+  }
+
+  // append received message to the messages signal or update sent messages if it's a status update
+  receiveMessage(newMessage: MessageResponse) {
+    if (newMessage) {
+      if (['DELIVERED', 'READ'].includes(newMessage.messageStatus as string)) {
+        this.messages.update(messages => messages.map(message => {
+          if (message.senderId == this.currentUserId() && (
+            newMessage.messageStatus === 'READ' && message.messageStatus !== newMessage.messageStatus ||
+            newMessage.messageStatus === 'DELIVERED' && message.messageStatus === 'SENT'
+          )) {
+            return { ...message, messageStatus: newMessage.messageStatus };
+          }
+          return message;
+        }));
+      } else {
+        this.messages.update(messages => [...messages, newMessage]);
+        // scroll to bottom
+        this.messagesDiv.nativeElement.scrollTo({ top: this.messagesDiv.nativeElement.scrollHeight });
+      }
+    }
   }
 
   private prepareMessagesObservable(): Observable<MessageResponse[]> {
@@ -127,7 +164,11 @@ export class ChatScreenComponent {
         this.messageSent.emit({ channelId: messageRequest.channelId, message: messageResponse });
         this.messageContent.set('');
         this.showEmojis.set(false);
-      }
+      },
+      error: (error) => {
+        console.error('Error creating message:', error);
+        this.toastrService.error('Error sending message');
+      },
     });
   }
 

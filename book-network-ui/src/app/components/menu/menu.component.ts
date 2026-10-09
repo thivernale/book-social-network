@@ -3,8 +3,8 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IMessage } from '@stomp/rx-stomp';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
-import { Notification } from '../../notification/notification';
 import { NotificationService } from '../../notification/notification.service';
+import { BookNotification } from '../../notification/types';
 import { TokenService } from '../../token/token.service';
 import { DynamicMenuService } from './services/dynamic-menu.service';
 
@@ -18,7 +18,7 @@ import { DynamicMenuService } from './services/dynamic-menu.service';
 })
 export class MenuComponent implements OnInit, OnDestroy {
   protected readonly username = signal('');
-  protected readonly notifications = signal<Notification[]>([]);
+  protected readonly notifications = signal<BookNotification[]>([]);
   protected readonly unreadCount = signal(0);
   protected menuItems = inject(DynamicMenuService).menuItems;
   private tokenService = inject(TokenService);
@@ -40,12 +40,17 @@ export class MenuComponent implements OnInit, OnDestroy {
         {
           'Authorization': `Bearer ${this.tokenService.token}`,
         },
-      ).subscribe((message: IMessage) => {
-        const notification: Notification = JSON.parse(message.body);
-        if (notification) {
-          this.notifications.update(notifications => [notification, ...notifications]);
-          this.unreadCount.update(count => count + 1);
-          this.toastrService.info(notification.content, notification.title);
+      ).subscribe({
+        next: (message: IMessage) => {
+          const notification: BookNotification = JSON.parse(message.body);
+          if (notification) {
+            this.notifications.update(notifications => [notification, ...notifications]);
+            this.unreadCount.update(count => count + 1);
+            this.toastrService.info(notification.content, notification.title);
+          }
+        },
+        error: (error) => {
+          console.error('Error receiving notifications:', error);
         }
       });
     }

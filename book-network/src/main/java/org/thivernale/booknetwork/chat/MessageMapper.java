@@ -26,7 +26,7 @@ class MessageMapper {
             message.getChannel()
                 .getId(),
             message.getChannel()
-                .getChannelName(message.getSenderId()),
+                .getChannelName(message.getRecipientId()),
             message.getSenderId(),
             message.getRecipientId(),
             message.getContent(),

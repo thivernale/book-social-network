@@ -39,6 +39,12 @@ public class Channel extends BaseEntity {
     @OrderBy("createdAt DESC")
     private List<Message> messages;
 
+    /**
+     * Get the channel name as the name of the opposite participant based on the provided user ID.
+     *
+     * @param userId The ID of the user for whom the channel name is to be retrieved.
+     * @return The full name of the opposite participant in the channel.
+     */
     @Transient
     public String getChannelName(final long userId) {
         return sender.getId()

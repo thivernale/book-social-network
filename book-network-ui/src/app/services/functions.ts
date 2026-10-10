@@ -3,8 +3,8 @@
 
 export type { CreateMessage$Params as CreateMessage$Params } from './fn/message/create-message';
 export { createMessage as createMessage } from './fn/message/create-message';
-export type { MarkAsRead$Params as MarkAsRead$Params } from './fn/message/mark-as-read';
-export { markAsRead as markAsRead } from './fn/message/mark-as-read';
+export type { UpdateMessageStatus$Params as UpdateMessageStatus$Params } from './fn/message/update-message-status';
+export { updateMessageStatus as updateMessageStatus } from './fn/message/update-message-status';
 export type { CreateMediaMessage$Params as CreateMediaMessage$Params } from './fn/message/create-media-message';
 export { createMediaMessage as createMediaMessage } from './fn/message/create-media-message';
 export type { GetMessages$Params as GetMessages$Params } from './fn/message/get-messages';

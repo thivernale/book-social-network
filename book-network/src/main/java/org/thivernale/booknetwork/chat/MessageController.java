@@ -38,8 +38,12 @@ public class MessageController {
 
     @PatchMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    void markAsRead(@RequestParam("channel-id") Long channelId, Authentication authentication) {
-        messageService.markAsRead(channelId, authentication);
+    void updateMessageStatus(
+        @RequestParam("channel-id") Long channelId,
+        @RequestParam(value = "status", required = false, defaultValue = "READ") MessageStatus status,
+        Authentication authentication
+    ) {
+        messageService.updateMessageStatus(channelId, status, authentication);
     }
 
     @GetMapping("/channel/{channel-id}")

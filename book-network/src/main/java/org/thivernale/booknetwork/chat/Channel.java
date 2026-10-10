@@ -54,8 +54,8 @@ public class Channel extends BaseEntity {
     @Transient
     public long getNumUnreadMessages(final long userId) {
         return messages.stream()
-            .filter(m -> m.getRecipientId() == userId && m.getStatus()
-                .equals(MessageStatus.SENT))
+            .filter(m -> m.getRecipientId() == userId && !m.getStatus()
+                .equals(MessageStatus.READ))
             .count();
     }
 

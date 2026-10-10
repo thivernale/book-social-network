@@ -70,7 +70,9 @@ export class ChatScreenComponent {
     });
   }
 
-  // append received message to the messages signal or update sent messages if it's a status update
+  /**
+   * Append a received message to the `messages` signal or update sent messages if it's a status update
+   */
   receiveMessage(newMessage: MessageResponse) {
     if (newMessage) {
       if (['DELIVERED', 'READ'].includes(newMessage.messageStatus as string)) {
@@ -108,12 +110,13 @@ export class ChatScreenComponent {
     if (channelId === undefined) {
       return;
     }
-    this.messageService.markAsRead({ 'channel-id': channelId }).subscribe({
+    const status = 'READ';
+    this.messageService.updateMessageStatus({ 'channel-id': channelId, status }).subscribe({
       next: () => {
         // return new objects, in-place mutation would not notify the signal
         this.messages.update(messages => messages.map(message =>
-          message.recipientId === this.currentUserId() && message.messageStatus !== 'READ'
-            ? { ...message, messageStatus: 'READ' }
+          message.recipientId === this.currentUserId() && message.messageStatus !== status
+            ? { ...message, messageStatus: status }
             : message
         ));
         this.channelRead.emit(channelId);
@@ -136,12 +139,12 @@ export class ChatScreenComponent {
   }
 
   protected sendMessage() {
-    if (this.selectedChannel() === undefined || this.messageContent() === '') {
+    if (this.selectedChannelId() === undefined || this.messageContent() === '') {
       return;
     }
 
     const messageRequest = {
-      channelId: this.selectedChannel()?.id as number,
+      channelId: this.selectedChannelId() as number,
       messageType: 'TEXT' as const,
       content: this.messageContent(),
       senderId: this.computeSenderId(),

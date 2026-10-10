@@ -81,7 +81,7 @@
         "tags": [
           "Message"
         ],
-        "operationId": "markAsRead",
+        "operationId": "updateMessageStatus",
         "parameters": [
           {
             "name": "channel-id",
@@ -90,6 +90,20 @@
             "schema": {
               "type": "integer",
               "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "READ",
+              "enum": [
+                "SENT",
+                "DELIVERED",
+                "READ"
+              ]
             }
           }
         ],

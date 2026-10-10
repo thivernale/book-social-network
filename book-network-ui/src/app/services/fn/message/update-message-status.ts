@@ -8,14 +8,16 @@ import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
 
-export interface MarkAsRead$Params {
+export interface UpdateMessageStatus$Params {
   'channel-id': number;
+  status?: 'SENT' | 'DELIVERED' | 'READ';
 }
 
-export function markAsRead(http: HttpClient, rootUrl: string, params: MarkAsRead$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-  const rb = new RequestBuilder(rootUrl, markAsRead.PATH, 'patch');
+export function updateMessageStatus(http: HttpClient, rootUrl: string, params: UpdateMessageStatus$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, updateMessageStatus.PATH, 'patch');
   if (params) {
     rb.query('channel-id', params['channel-id'], {});
+    rb.query('status', params.status, {});
   }
 
   return http.request(
@@ -28,4 +30,4 @@ export function markAsRead(http: HttpClient, rootUrl: string, params: MarkAsRead
   );
 }
 
-markAsRead.PATH = '/messages';
+updateMessageStatus.PATH = '/messages';

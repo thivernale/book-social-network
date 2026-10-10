@@ -16,9 +16,9 @@ import { createMessage } from '../fn/message/create-message';
 import { CreateMessage$Params } from '../fn/message/create-message';
 import { getMessages } from '../fn/message/get-messages';
 import { GetMessages$Params } from '../fn/message/get-messages';
-import { markAsRead } from '../fn/message/mark-as-read';
-import { MarkAsRead$Params } from '../fn/message/mark-as-read';
 import { MessageResponse } from '../models/message-response';
+import { updateMessageStatus } from '../fn/message/update-message-status';
+import { UpdateMessageStatus$Params } from '../fn/message/update-message-status';
 
 @Injectable({ providedIn: 'root' })
 export class MessageService extends BaseService {
@@ -53,28 +53,28 @@ export class MessageService extends BaseService {
     );
   }
 
-  /** Path part for operation `markAsRead()` */
-  static readonly MarkAsReadPath = '/messages';
+  /** Path part for operation `updateMessageStatus()` */
+  static readonly UpdateMessageStatusPath = '/messages';
 
   /**
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `markAsRead()` instead.
+   * To access only the response body, use `updateMessageStatus()` instead.
    *
    * This method doesn't expect any request body.
    */
-  markAsRead$Response(params: MarkAsRead$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
-    const obs = markAsRead(this.http, this.rootUrl, params, context);
+  updateMessageStatus$Response(params: UpdateMessageStatus$Params, context?: HttpContext): Observable<StrictHttpResponse<void>> {
+    const obs = updateMessageStatus(this.http, this.rootUrl, params, context);
     return obs;
   }
 
   /**
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `markAsRead$Response()` instead.
+   * To access the full response (for headers, for example), `updateMessageStatus$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  markAsRead(params: MarkAsRead$Params, context?: HttpContext): Observable<void> {
-    const resp = this.markAsRead$Response(params, context);
+  updateMessageStatus(params: UpdateMessageStatus$Params, context?: HttpContext): Observable<void> {
+    const resp = this.updateMessageStatus$Response(params, context);
     return resp.pipe(
       map((r: StrictHttpResponse<void>): void => r.body)
     );

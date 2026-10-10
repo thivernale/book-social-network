@@ -6,7 +6,7 @@ import { NotificationService } from '../../../../notification/notification.servi
 import { ChatNotification } from '../../../../notification/types';
 import { ChannelResponse } from '../../../../services/models/channel-response';
 import { MessageResponse } from '../../../../services/models/message-response';
-import { ChannelService } from '../../../../services/services';
+import { ChannelService, MessageService } from '../../../../services/services';
 import { TokenService } from '../../../../token/token.service';
 import { ChannelListComponent } from '../../components/chat-list/channel-list.component';
 import { ChatScreenComponent } from '../../components/chat-screen/chat-screen.component';
@@ -21,7 +21,8 @@ import { ChatScreenComponent } from '../../components/chat-screen/chat-screen.co
 export class ChatComponent implements OnDestroy {
   private readonly tokenService = inject(TokenService);
   private readonly channelService = inject(ChannelService);
-  private notificationService = inject(NotificationService);
+  private readonly messageService = inject(MessageService);
+  private readonly notificationService = inject(NotificationService);
 
   protected currentUserId = signal<number | undefined>(this.tokenService.decodeToken<{ id: number }>()?.id);
 
@@ -144,7 +145,7 @@ export class ChatComponent implements OnDestroy {
     });
   }
 
-  private getLastMessageContent(message: MessageResponse | ChatNotification) {
+  private getLastMessageContent(message: Partial<{ messageType: string; content: string }>) {
     return message.messageType === 'TEXT' ? message.content : 'Attachment';
   }
 

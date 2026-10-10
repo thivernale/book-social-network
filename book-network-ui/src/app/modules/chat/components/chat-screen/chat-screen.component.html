@@ -50,17 +50,18 @@
             {{ message.createdAt | date : 'HH:mm:ss' }}
             @if (isSentByCurrentUser(message)) {
               <span>
-                        <i class="fas"
-                           [ngClass]="{
-                              'fa-check': message.messageStatus === 'SENT' || message.messageStatus === 'DELIVERED',
-                              'fa-check-double': message.messageStatus === 'READ'
-                            }"
-                        ></i>
-                      </span>
+                <i class="fas"
+                   [ngClass]="{
+                      'fa-check': message.messageStatus === 'SENT',
+                      'fa-check-double': message.messageStatus === 'READ' || message.messageStatus === 'DELIVERED',
+                      'text-success': message.messageStatus === 'READ',
+                    }"
+                ></i>
+              </span>
             } @else if (message.messageStatus !== 'READ') {
               <span class="badge border border-light rounded-circle bg-primary p-1">
-                          <span class="visually-hidden"></span>
-                        </span>
+                <span class="visually-hidden"></span>
+              </span>
             }
           </small>
         </div>

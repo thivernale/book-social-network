@@ -56,25 +56,27 @@ class MessageService {
         return message.getId();
     }
 
-    void markAsRead(Long channelId, Authentication authentication) {
+    void updateMessageStatus(Long channelId, MessageStatus status, Authentication authentication) {
         channelRepository.findById(channelId)
             .map((Channel channel) -> {
-                int updated = messageRepository.updateStatusByChannel(channelId, MessageStatus.READ);
+                // current user has received/read messages
+                final Long msgRecipientId = getSenderId(channel, authentication);
+                final Long msgSenderId = getRecipientId(channel, authentication);
 
-                // add notification to the other participant for read messages
-                Long recipientId = getRecipientId(channel, authentication);
+                int updated = messageRepository.updateStatusByChannelAndRecipient(channelId, status, msgRecipientId);
 
+                // notify message sender that message has reached recipient in some capacity
                 notificationService.sendChatNotification(
-                    recipientId.toString(),
+                    msgSenderId.toString(),
                     new ChatNotification(
                         channelId,
                         null,
-                        getSenderId(channel, authentication),
-                        recipientId,
+                        msgRecipientId,
+                        msgSenderId,
+                        String.valueOf(updated), // number of messages updated
                         null,
                         null,
-                        null,
-                        ChatNotificationCategory.READ
+                        ChatNotificationCategory.valueOf(status.name())
                     )
                 );
 

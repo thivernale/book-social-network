@@ -20,6 +20,7 @@ import { Observable, of, switchMap } from 'rxjs';
 import { ChannelResponse } from '../../../../services/models/channel-response';
 import { MessageResponse } from '../../../../services/models/message-response';
 import { MessageService } from '../../../../services/services/message.service';
+import { StatusUpdateService } from '../../services/status-update.service';
 
 @Component({
   selector: 'app-chat-screen',
@@ -49,13 +50,27 @@ export class ChatScreenComponent {
   @ViewChild('messagesDiv') protected messagesDiv!: ElementRef<HTMLDivElement>;
 
   private toastrService = inject(ToastrService);
+  private statusService = inject(StatusUpdateService);
+
+  private markChannelAsRead = this.statusService.createMessageStatusUpdateAction(
+    'READ',
+    // The success handler callback
+    () => {
+      // return new objects, in-place mutation would not notify the signal
+      this.messages.update(messages => messages.map(message =>
+        message.recipientId === this.currentUserId() && message.messageStatus !== 'READ'
+          ? { ...message, messageStatus: 'READ' }
+          : message
+      ));
+      this.channelRead.emit(this.selectedChannelId() as number);
+    });
 
   constructor() {
     // mark as read when a channel with unread messages is opened
     effect(() => {
       const channelId = this.selectedChannelId();
       if (channelId !== undefined && untracked(() => this.selectedChannel()?.unreadCount)) {
-        untracked(() => this.markChannelAsRead());
+        untracked(() => this.markChannelAsRead(channelId));
       }
     });
 
@@ -103,25 +118,6 @@ export class ChatScreenComponent {
           'channel-id': channelId
         });
       }));
-  }
-
-  private markChannelAsRead() {
-    const channelId = this.selectedChannelId();
-    if (channelId === undefined) {
-      return;
-    }
-    const status = 'READ';
-    this.messageService.updateMessageStatus({ 'channel-id': channelId, status }).subscribe({
-      next: () => {
-        // return new objects, in-place mutation would not notify the signal
-        this.messages.update(messages => messages.map(message =>
-          message.recipientId === this.currentUserId() && message.messageStatus !== status
-            ? { ...message, messageStatus: status }
-            : message
-        ));
-        this.channelRead.emit(channelId);
-      }
-    });
   }
 
   protected isSentByCurrentUser(message: MessageResponse) {
@@ -194,6 +190,6 @@ export class ChatScreenComponent {
   }
 
   protected handleMessageContentClick() {
-    this.markChannelAsRead();
+    this.markChannelAsRead(this.selectedChannelId() as number);
   }
 }

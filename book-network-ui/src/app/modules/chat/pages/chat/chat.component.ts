@@ -6,10 +6,11 @@ import { NotificationService } from '../../../../notification/notification.servi
 import { ChatNotification } from '../../../../notification/types';
 import { ChannelResponse } from '../../../../services/models/channel-response';
 import { MessageResponse } from '../../../../services/models/message-response';
-import { ChannelService, MessageService } from '../../../../services/services';
+import { ChannelService } from '../../../../services/services';
 import { TokenService } from '../../../../token/token.service';
 import { ChannelListComponent } from '../../components/chat-list/channel-list.component';
 import { ChatScreenComponent } from '../../components/chat-screen/chat-screen.component';
+import { StatusUpdateService } from '../../services/status-update.service';
 
 @Component({
   imports: [
@@ -21,7 +22,6 @@ import { ChatScreenComponent } from '../../components/chat-screen/chat-screen.co
 export class ChatComponent implements OnDestroy {
   private readonly tokenService = inject(TokenService);
   private readonly channelService = inject(ChannelService);
-  private readonly messageService = inject(MessageService);
   private readonly notificationService = inject(NotificationService);
 
   protected currentUserId = signal<number | undefined>(this.tokenService.decodeToken<{ id: number }>()?.id);
@@ -35,24 +35,34 @@ export class ChatComponent implements OnDestroy {
     this.channels().find(channel => channel.id === this.selectedChannelId())
   );
 
-  private notificationSignal = toSignal(
-    this.notificationService.watch(
-      `/user/${this.currentUserId()}/chat`,
-      {
-        'Authorization': `Bearer ${this.tokenService.token}`,
-      },
-    ).pipe(
-      map(message => JSON.parse(message.body) as ChatNotification),
-      tap(notification => this.handleNotification(notification)),
-      catchError((err) => {
-        console.error(err);
-        return of(undefined);
-      })
-    ),
-    { initialValue: undefined }
-  );
+  private statusService = inject(StatusUpdateService);
+
+  private markChannelAsDelivered = this.statusService.createMessageStatusUpdateAction(
+    'DELIVERED',
+    () => {
+      console.log('Message status updated to DELIVERED');
+    });
 
   @ViewChild(ChatScreenComponent) chatScreen!: ChatScreenComponent;
+
+  constructor() {
+    toSignal(
+      this.notificationService.watch(
+        `/user/${this.currentUserId()}/chat`,
+        {
+          'Authorization': `Bearer ${this.tokenService.token}`,
+        },
+      ).pipe(
+        map(message => JSON.parse(message.body) as ChatNotification),
+        tap(notification => this.handleNotification(notification)),
+        catchError((err) => {
+          console.error(err);
+          return of(undefined);
+        })
+      ),
+      { initialValue: undefined }
+    );
+  }
 
   async ngOnDestroy(): Promise<void> {
     await this.notificationService.deactivate();
@@ -143,6 +153,8 @@ export class ChatComponent implements OnDestroy {
       lastMessageContent: this.getLastMessageContent(message),
       unreadCount: (channel.unreadCount ?? 0) + 1,
     });
+    // send a delivered status update
+    this.markChannelAsDelivered(channel.id as number);
   }
 
   private getLastMessageContent(message: Partial<{ messageType: string; content: string }>) {

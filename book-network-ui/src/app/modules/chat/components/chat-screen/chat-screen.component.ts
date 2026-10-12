@@ -1,5 +1,6 @@
 import { DatePipe, NgClass } from '@angular/common';
 import {
+  AfterViewChecked,
   Component,
   computed,
   effect,
@@ -33,7 +34,7 @@ import { StatusUpdateService } from '../../services/status-update.service';
   ],
   templateUrl: './chat-screen.component.html',
 })
-export class ChatScreenComponent {
+export class ChatScreenComponent implements AfterViewChecked {
   selectedChannel = input.required<ChannelResponse | undefined>();
   currentUserId = input.required<number | undefined>();
   // notify the parent, which owns the channels, about changes made from the chat screen
@@ -85,6 +86,16 @@ export class ChatScreenComponent {
     });
   }
 
+  ngAfterViewChecked(): void {
+    this.scrollMessagesToBottom();
+  }
+
+  private scrollMessagesToBottom() {
+    if (this.messagesDiv) {
+      this.messagesDiv.nativeElement.scrollTo({ top: this.messagesDiv.nativeElement.scrollHeight });
+    }
+  }
+
   /**
    * Append a received message to the `messages` signal or update sent messages if it's a status update
    */
@@ -102,8 +113,6 @@ export class ChatScreenComponent {
         }));
       } else {
         this.messages.update(messages => [...messages, newMessage]);
-        // scroll to bottom
-        this.messagesDiv.nativeElement.scrollTo({ top: this.messagesDiv.nativeElement.scrollHeight });
       }
     }
   }
@@ -126,8 +135,44 @@ export class ChatScreenComponent {
 
   protected uploadMedia(target: EventTarget | null) {
     const fileInput = target as HTMLInputElement;
-    console.log(fileInput);
-    // TODO file upload
+    const file = fileInput?.files?.[0];
+    const channelId = this.selectedChannelId();
+
+    if (channelId === undefined || file === undefined) {
+      return;
+    }
+
+    // upload file
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      const fileContent = fileReader.result as string;
+
+      if (fileContent) {
+        this.messageService.createMediaMessage({
+          'channel-id': channelId,
+          body: { file },
+        }).subscribe({
+          next: () => {
+            const messageResponse: MessageResponse = {
+              messageType: 'IMAGE',
+              senderId: this.computeSenderId(),
+              recipientId: this.computeRecipientId(),
+              createdAt: new Date().toISOString(),
+              messageStatus: 'SENT',
+              id: Date.now(), // simulate an id
+              content: 'Attachment',
+              media: [fileContent.split(',')[1]],
+            };
+            this.messages.update(messages => [...messages, messageResponse]);
+            this.messageSent.emit({ channelId, message: messageResponse });
+          }
+        });
+      }
+    };
+    fileReader.onerror = () => {
+      this.toastrService.error('Error reading file');
+    };
+    fileReader.readAsDataURL(file);
   }
 
   protected inputEmoji(event: EmojiEvent) {
